@@ -2,9 +2,12 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from graph_visualizer_api import main as api_main
 
 
 def main():
+    api_main.main()  # TODO: Only for testing purposes. Remove when adding more stuff to API.
+
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'graph_visualizer_core.settings')
     try:

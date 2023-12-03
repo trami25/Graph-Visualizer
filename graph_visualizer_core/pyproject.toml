@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graph_visualizer_core"
+authors = [
+    {name = "Vladislav Radović", email = "radovic.sv27.2021@uns.ac.rs"},
+    {name = "Nikola Mitrović", email = "mitrovic.sv18.2021@uns.ac.rs"},
+    {name = "Bojan Živanić", email = "radovic.sv61.2021@uns.ac.rs"},
+    {name = "Aleksa Janjić", email = "radovic.sv58.2021@uns.ac.rs"},
+]
+description = "Django platform for Graph Visualizer"
+requires-python = ">=3.9"
+classifiers = [
+    "Framework :: Django",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "graph_visualizer_api",
+    "Django",
+]
+dynamic = ["version"]
+
+[project.scripts]
+gv-manage = "manage:main"
