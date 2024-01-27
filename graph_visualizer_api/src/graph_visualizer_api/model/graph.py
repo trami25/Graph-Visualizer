@@ -85,7 +85,6 @@ class Graph:
         :returns: Node if found or None.
         """
 
-        # nodes = filter(lambda node: node.node_id == node_id, self._nodes)
         return next((node for node in self._nodes if node_id == node.node_id), None)
 
     def get_edge(self, source: Node, target: Node) -> Optional[Edge]:
@@ -102,5 +101,4 @@ class Graph:
         elif target not in self._nodes:
             raise GraphError("target node does not exist")
 
-        # edges = filter(lambda edge: edge.source == source and edge.target == target, self._edges)
         return next((edge for edge in self._edges if source == edge.source and target == edge.target), None)
