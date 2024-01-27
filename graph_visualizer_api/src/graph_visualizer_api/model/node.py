@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 
 
@@ -20,3 +21,6 @@ class Node:
     @property
     def data(self) -> dict[str, Any]:
         return self._data
+
+    def __eq__(self, other: Node) -> bool:
+        return self._node_id == other._node_id

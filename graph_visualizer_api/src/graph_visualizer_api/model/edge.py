@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .node import Node
 from typing import Any
 
@@ -30,3 +31,6 @@ class Edge:
     @property
     def data(self) -> dict[str, Any]:
         return self._data
+
+    def __eq__(self, other: Edge) -> bool:
+        return self._source == other._source and self._target == other._target
