@@ -24,3 +24,6 @@ class Node:
 
     def __eq__(self, other: Node) -> bool:
         return self._node_id == other._node_id
+
+    def __hash__(self) -> int:
+        return hash(self._node_id)
