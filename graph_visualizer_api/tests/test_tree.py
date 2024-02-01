@@ -42,7 +42,7 @@ class TestTree(unittest.TestCase):
         self.assertEqual(tree.root.children[0].children[0].node, node3)
         self.assertEqual(len(tree.root.children[0].children[0].children), 0)
 
-    def test_update_tree_with_multiple_nodes_and_edges_mixed(self):
+    def test_update_tree_with_multiple_nodes_and_edges_mixed_undirected(self):
         node1 = Node(1, {})
         node2 = Node(2, {})
         node3 = Node(3, {})
@@ -61,7 +61,7 @@ class TestTree(unittest.TestCase):
         self.assertEqual(len(tree.root.children[0].children), 1)
         self.assertEqual(len(tree.root.children[1].children), 1)
 
-    def test_update_tree_with_multiple_nodes_and_edges_mixed2(self):
+    def test_update_tree_with_multiple_nodes_and_edges_mixed_directed(self):
         node1 = Node(1, {})
         node2 = Node(2, {})
         node3 = Node(3, {})
