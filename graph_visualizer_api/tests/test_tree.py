@@ -15,11 +15,11 @@ class TestTree(unittest.TestCase):
         tree.update_tree(self.node1, edges)
 
         self.assertEqual(tree.root.node, self.node1)
-        self.assertEqual(len(tree.root.children), 1)
-        self.assertEqual(tree.root.children[0].node, self.node2)
-        self.assertEqual(len(tree.root.children[0].children), 1)
-        self.assertEqual(tree.root.children[0].children[0].node, self.node3)
-        self.assertEqual(len(tree.root.children[0].children[0].children), 0)
+        self.assertEqual(len(tree.root.all_children), 1)
+        self.assertEqual(tree.root.all_children[0].node, self.node2)
+        self.assertEqual(len(tree.root.all_children[0].all_children), 1)
+        self.assertEqual(tree.root.all_children[0].all_children[0].node, self.node3)
+        self.assertEqual(len(tree.root.all_children[0].all_children[0].all_children), 0)
 
     def test_update_tree_directed(self):
         edges = [Edge(self.node1, self.node2, {}), Edge(self.node2, self.node3, {})]
@@ -27,11 +27,11 @@ class TestTree(unittest.TestCase):
         tree.update_tree(self.node1, edges)
 
         self.assertEqual(tree.root.node, self.node1)
-        self.assertEqual(len(tree.root.children), 1)
-        self.assertEqual(tree.root.children[0].node, self.node2)
-        self.assertEqual(len(tree.root.children[0].children), 1)
-        self.assertEqual(tree.root.children[0].children[0].node, self.node3)
-        self.assertEqual(len(tree.root.children[0].children[0].children), 0)
+        self.assertEqual(len(tree.root.all_children), 1)
+        self.assertEqual(tree.root.all_children[0].node, self.node2)
+        self.assertEqual(len(tree.root.all_children[0].all_children), 1)
+        self.assertEqual(tree.root.all_children[0].all_children[0].node, self.node3)
+        self.assertEqual(len(tree.root.all_children[0].all_children[0].all_children), 0)
 
     def test_update_tree_mixed_undirected(self):
         edges = [Edge(self.node1, self.node2, {}), Edge(self.node2, self.node3, {}), Edge(self.node3, self.node1, {})]
@@ -39,11 +39,11 @@ class TestTree(unittest.TestCase):
         tree.update_tree(self.node1, edges)
 
         self.assertEqual(tree.root.node, self.node1)
-        self.assertEqual(len(tree.root.children), 2)
-        self.assertEqual(tree.root.children[0].node, self.node2)
-        self.assertEqual(tree.root.children[1].node, self.node3)
-        self.assertEqual(len(tree.root.children[0].children), 1)
-        self.assertEqual(len(tree.root.children[1].children), 1)
+        self.assertEqual(len(tree.root.all_children), 2)
+        self.assertEqual(tree.root.all_children[0].node, self.node2)
+        self.assertEqual(tree.root.all_children[1].node, self.node3)
+        self.assertEqual(len(tree.root.all_children[0].all_children), 1)
+        self.assertEqual(len(tree.root.all_children[1].all_children), 1)
 
     def test_update_tree_mixed_directed(self):
         edges = [Edge(self.node1, self.node2, {}), Edge(self.node2, self.node3, {}), Edge(self.node3, self.node1, {})]
@@ -51,11 +51,11 @@ class TestTree(unittest.TestCase):
         tree.update_tree(self.node1, edges)
 
         self.assertEqual(tree.root.node, self.node1)
-        self.assertEqual(len(tree.root.children), 1)
-        self.assertEqual(tree.root.children[0].node, self.node2)
-        self.assertEqual(len(tree.root.children[0].children), 1)
-        self.assertEqual(tree.root.children[0].children[0].node, self.node3)
-        self.assertEqual(len(tree.root.children[0].children[0].children), 0)
+        self.assertEqual(len(tree.root.all_children), 1)
+        self.assertEqual(tree.root.all_children[0].node, self.node2)
+        self.assertEqual(len(tree.root.all_children[0].all_children), 1)
+        self.assertEqual(tree.root.all_children[0].all_children[0].node, self.node3)
+        self.assertEqual(len(tree.root.all_children[0].all_children[0].all_children), 0)
 
 if __name__ == '__main__':
     unittest.main()
