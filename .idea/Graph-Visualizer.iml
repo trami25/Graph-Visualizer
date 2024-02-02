@@ -24,5 +24,10 @@
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/simple_view_visualizer_plugin/template" />
+      </list>
+    </option>
   </component>
 </module>
