@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Block Visualizer</title>
+    <style>
+        .node {
+            border: 1px solid #000;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .node h3 {
+            margin: 5px;
+	        text-align: center;
+	        border-bottom: 1px solid #000;
+	        padding-bottom: 5px;
+        }
+
+	    .node ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+    </style>
+</head>
+<body>
+    {% for node in nodes %}
+    <div class="node">
+        <h3>{{ node.node_id }}</h3>
+        {% if node.data %}
+            <ul>
+                {% for key, value in node.data.items() %}
+                    <li>{{ key }} = {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No data available for this node.</p>
+        {% endif %}
+    </div>
+{% endfor %}
+</body>
+</html>
