@@ -1,7 +1,7 @@
 from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
-from typing import Optional
+from typing import Optional, Any
 
 
 class Graph:
@@ -102,3 +102,18 @@ class Graph:
             raise GraphError("target node does not exist")
 
         return next((edge for edge in self._edges if source == edge.source and target == edge.target), None)
+
+    def get_node_by_attribute(self, attribute: str, value: Any) -> Optional[Node]:
+        """Returns a node by its attribute.
+
+        :param attribute: Attribute of the node.
+        :param value: Value for the given attribute.
+        :returns: Node if found or None.
+        """
+
+        return next((node for node in self._nodes if value == node.data.get(attribute)), None)
+
+    def __str__(self) -> str:
+        nodes = ''.join([f'{node}\n' for node in self._nodes])
+        edges = ''.join([f'{edge}\n' for edge in self._edges])
+        return nodes + edges
