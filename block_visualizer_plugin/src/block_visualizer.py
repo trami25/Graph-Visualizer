@@ -11,6 +11,6 @@ class BlockVisualizer(Visualizer):
         template_env = Environment(loader=FileSystemLoader(os.path.join(script_folder, 'template')))
         template = template_env.get_template('block_visualizer_template.jinja2')
 
-        html_template = template.render(nodes=graph.nodes)
+        html_template = template.render(graph=graph)
 
         return html_template

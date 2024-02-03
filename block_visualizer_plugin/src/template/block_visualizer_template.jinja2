@@ -8,36 +8,61 @@
             padding: 10px;
             margin: 10px;
             display: inline-block;
+            position: relative;
         }
 
         .node h3 {
             margin: 5px;
-	        text-align: center;
-	        border-bottom: 1px solid #000;
-	        padding-bottom: 5px;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
         }
 
-	    .node ul {
+        .node ul {
             list-style-type: none;
             padding: 0;
         }
 
+        .line {
+            position: absolute;
+            background-color: #000;
+        }
     </style>
 </head>
 <body>
-    {% for node in nodes %}
-    <div class="node">
-        <h3>{{ node.node_id }}</h3>
-        {% if node.data %}
-            <ul>
-                {% for key, value in node.data.items() %}
-                    <li>{{ key }} = {{ value }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No data available for this node.</p>
-        {% endif %}
-    </div>
-{% endfor %}
+    {% for node in graph.nodes %}
+        <div class="node" id="node{{ node.node_id }}">
+            <h3>{{ node.node_id }}</h3>
+            {% if node.data %}
+                <ul>
+                    {% for key, value in node.data.items() %}
+                        <li>{{ key }} = {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No data available for this node.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <script>
+        function connect_nodes(source_node_id, target_node_id) {
+            const rect1 = document.getElementById('node' + source_node_id).getBoundingClientRect();
+            const rect2 = document.getElementById('node' + target_node_id).getBoundingClientRect();
+
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.style.top = (rect1.top + rect1.height / 2) + 'px';
+            line.style.left = (rect1.left + rect1.width) + 'px';
+            line.style.width = (rect2.left - rect1.left - rect1.width) + 'px';
+            line.style.height = '2px';
+
+            document.body.appendChild(line);
+        }
+
+        {% for edge in graph.edges %}
+            connect_nodes({{ edge.source.node_id }}, {{ edge.target.node_id }});
+        {% endfor %}
+    </script>
 </body>
 </html>
