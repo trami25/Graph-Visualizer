@@ -119,3 +119,15 @@ class TestGraph(unittest.TestCase):
 
         self.assertEqual(0, len(graph.edges))
         self.assertIsNone(graph.get_edge(node1, node2))
+
+    def test_find_by_attribute(self):
+        node1 = Node(1, {'name': 'Pera'})
+        node2 = Node(2, {'name': 'Djura', 'age': 25})
+        node3 = Node(3, {})
+        node4 = Node(4, {'age': 25})
+        graph = Graph([node1, node2, node3, node4], [])
+
+        self.assertEqual(0, len(graph.get_nodes_by_attributes(job='baker')))
+        self.assertEqual(2, len(graph.get_nodes_by_attributes(age=25)))
+        self.assertEqual(node1, graph.get_nodes_by_attributes(name='Pera')[0])
+        self.assertEqual(0, len(graph.get_nodes_by_attributes(name='Mika')))
