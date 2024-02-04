@@ -59,7 +59,8 @@ class HtmlDataSource(DataSource):
             return
 
         # Handle existing node
-        node = self._graph.get_node_by_attribute('url', node_url)
+        nodes = self._graph.get_nodes_by_attributes(url=node_url)
+        node = nodes[0] if len(nodes) > 0 else None
         if node is not None and previous_node is not None:
             edge = self._graph.get_edge(previous_node, node)
             if edge is None:

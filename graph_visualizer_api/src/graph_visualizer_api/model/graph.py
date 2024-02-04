@@ -103,15 +103,15 @@ class Graph:
 
         return next((edge for edge in self._edges if source == edge.source and target == edge.target), None)
 
-    def get_node_by_attribute(self, attribute: str, value: Any) -> Optional[Node]:
-        """Returns a node by its attribute.
+    def get_nodes_by_attributes(self, **kwargs) -> list[Node]:
+        """Returns a list of nodes by their attributes.
+        Checks if the given argument dictionary is a subset of the node data.
 
-        :param attribute: Attribute of the node.
-        :param value: Value for the given attribute.
+        :param kwargs: Dictionary of key/values that are used to filter nodes.
         :returns: Node if found or None.
         """
 
-        return next((node for node in self._nodes if value == node.data.get(attribute)), None)
+        return [node for node in self._nodes if kwargs.items() <= node.data.items()]
 
     def __str__(self) -> str:
         nodes = ''.join([f'{node}\n' for node in self._nodes])
