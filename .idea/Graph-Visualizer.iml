@@ -17,6 +17,7 @@
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_api/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_platform/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/simple_visualizer_plugin/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />

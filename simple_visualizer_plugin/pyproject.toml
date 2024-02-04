@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simple_visualizer_plugin"
+author = [
+    {name = "Nikola Mitrović", email = "mitrovic.sv18.2021@uns.ac.rs"}
+]
+description = "Simple visualizer plugin for visualization of the graph"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "graph_visualizer_api",
+    "os",
+    "jinja2",
+    "bs4"
+]
+dynamic = ["version"]

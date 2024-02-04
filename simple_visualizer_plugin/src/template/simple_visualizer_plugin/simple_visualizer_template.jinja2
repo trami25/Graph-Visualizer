@@ -1,0 +1,49 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script>
+        function connectNodes(node1, node2, directed) {
+            const rect1 = node1.getBoundingClientRect();
+            const rect2 = node2.getBoundingClientRect();
+
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.style.top = (rect1.top + rect1.height / 2) + 'px';
+            line.style.left = (rect1.left + rect1.width) + 'px';
+            line.style.width = (rect2.left - rect1.left - rect1.width) + 'px';
+            line.style.height = '2px';
+
+            if (directed) {
+                const arrow = document.createElement('div');
+                arrow.className = 'arrow';
+                arrow.style.position = 'absolute';
+                arrow.style.top = (rect2.top + rect2.height / 2) - 5 + 'px';
+                arrow.style.left = (rect2.left - 10) + 'px';
+                arrow.style.width = '0';
+                arrow.style.height = '0';
+                arrow.style.borderLeft = '10px solid transparent';
+                arrow.style.borderRight = '10px solid transparent';
+                arrow.style.borderBottom = '10px solid black';
+                document.body.appendChild(arrow);
+            }
+
+            document.body.appendChild(line);
+        }
+    </script>
+</head>
+<body>
+    <div class="graph-container">
+        {% for node in graph.nodes %}
+            <p class="node" id="node{{ node.node_id }}">ID: {{ node.node_id }}</p>
+        {% endfor %}
+        <div id="connected-nodes"></div>
+    </div>
+
+    <script>
+        {% for edge in graph.edges %}
+            const node1_{{ edge.source.node_id }} = document.getElementById('node{{ edge.source.node_id }}');
+            const node2_{{ edge.target.node_id }} = document.getElementById('node{{ edge.target.node_id }}');
+            const directed = true;
+            connectNodes(node1_{{ edge.source.node_id }}, node2_{{ edge.target.node_id }}, directed);
+        {% endfor %}
+    </script>
+</body>
