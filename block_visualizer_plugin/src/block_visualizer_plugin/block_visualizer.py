@@ -8,7 +8,7 @@ class BlockVisualizer(Visualizer):
     def generate_template(self, graph: Graph) -> str:
         script_folder = os.path.dirname(os.path.abspath(__file__))
 
-        template_env = Environment(loader=FileSystemLoader(os.path.join(script_folder, 'template')))
+        template_env = Environment(loader=FileSystemLoader(os.path.join(script_folder, '../template')))
         template = template_env.get_template('block_visualizer_template.jinja2')
 
         html_template = template.render(graph=graph)
