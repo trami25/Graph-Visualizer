@@ -1,22 +1,45 @@
-.graph-container {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
-    display: flex;
-    justify-content: space-around;
-}
+ .node circle {
+            fill: #ddd;
+            stroke: #000;
+            stroke-width: 1;
+        }
+ .node text {
+            text-anchor: middle;
+            alignment-baseline: central;
+        }
 
-.node {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    margin: 5px;
-    padding: 15px;
-    background-color: #f0f0f0;
-    border-radius: 50%;
-    text-align: center;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
+ .edge text {
+            display: none;
+        }
+
+ .link {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+ .arrow {
+            fill: #000;
+        }
+
+ #graph-container {
+            border: 2px solid #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+ #graph-outline {
+            position: absolute;
+            border: 2px solid #000;
+            pointer-events: none;
+        }
+
+ #details {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 5px;
+            border: 1px solid #000;
+            display: none;
+        }
