@@ -16,8 +16,8 @@ dependencies = [
     "graph_visualizer_api",
     "os",
     "jinja2",
-    "d3/v7"
+    "d3"
 ]
 [project.entry-points."gv.plugins.visualizer"]
-html = "html_simple_visualizer_plugin.visualizer:HtmlSimpleVisualiser"
+simple = "simple_visualizer_plugin.visualizer:SimpleVisualiser"
 dynamic = ["version"]
