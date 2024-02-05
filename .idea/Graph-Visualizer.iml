@@ -17,10 +17,11 @@
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_api/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/graph_visualizer_platform/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/html_data_source_plugin/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/simple_visualizer_plugin/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.10 (Graph-Visualizer)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

@@ -34,3 +34,6 @@ class Edge:
 
     def __eq__(self, other: Edge) -> bool:
         return self._source == other._source and self._target == other._target
+
+    def __str__(self) -> str:
+        return f'Edge[{self._source.node_id}, {self._target.node_id}]'
