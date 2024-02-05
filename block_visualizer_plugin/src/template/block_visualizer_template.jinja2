@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Block Visualizer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Visualizer with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         .node {
-            border: 1px solid #000;
-            padding: 10px;
-            margin: 10px;
             display: inline-block;
             position: relative;
+        }
+
+        .node rect {
+            fill: #ddd;
+            stroke: #000;
         }
 
         .node h3 {
@@ -21,48 +26,128 @@
         .node ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
-        .line {
-            position: absolute;
-            background-color: #000;
+        .node li {
+            margin: 5px;
+        }
+
+        .arrowhead {
+            fill: #000;
         }
     </style>
 </head>
 <body>
-    {% for node in graph.nodes %}
-        <div class="node" id="node{{ node.node_id }}">
-            <h3>{{ node.node_id }}</h3>
-            {% if node.data %}
-                <ul>
-                    {% for key, value in node.data.items() %}
-                        <li>{{ key }} = {{ value }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No data available for this node.</p>
-            {% endif %}
-        </div>
-    {% endfor %}
-
     <script>
-        function connect_nodes(source_node_id, target_node_id) {
-            const rect1 = document.getElementById('node' + source_node_id).getBoundingClientRect();
-            const rect2 = document.getElementById('node' + target_node_id).getBoundingClientRect();
+        const nodes = {{ graph.nodes | tojson }};
+        const links = {{ graph.edges | tojson }};
+        const width = 1000;
+        const height = 600;
 
-            const line = document.createElement('div');
-            line.className = 'line';
-            line.style.top = (rect1.top + rect1.height / 2) + 'px';
-            line.style.left = (rect1.left + rect1.width) + 'px';
-            line.style.width = (rect2.left - rect1.left - rect1.width) + 'px';
-            line.style.height = '2px';
+        const svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-            document.body.appendChild(line);
+        const linkElements = svg.selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 2)
+            .attr("marker-end", isDirected ? "url(#arrowhead)" : null);
+
+        const linkForce = d3.forceLink(links)
+            .id(d => d.id)
+            .distance(150)
+            .strength(1)
+            .iterations(1);
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("link", linkForce)
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const nodeElements = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        nodeElements.append("rect")
+            .attr("width", 120)
+            .attr("height", 100);
+
+        const foreignObjects = nodeElements.append("foreignObject")
+            .attr("width", 120)
+            .attr("height", function(d) {
+                const relevantAttributes = Object.keys(d)
+                    .filter(key => key !== 'id' && key !== 'x' && key !== 'y' && key !== 'index');
+                const numAttributes = relevantAttributes.length;
+                return numAttributes * 20; // Initial height + height per attribute
+            })
+            .append("xhtml:div");
+
+        foreignObjects.append("h3")
+            .text(d => d.id);
+
+        foreignObjects.append("ul")
+            .selectAll("li")
+            .data(d => Object.entries(d).filter(entry => entry[0] !== 'id')) // Show all attributes except id
+            .enter().append("li")
+            .text(entry => `${entry[0]}: ${entry[1]}`);
+
+        // Adding marker for arrowhead
+        const defs = svg.append("defs");
+        defs.append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 0 10 10")
+            .attr("refX", 35)
+            .attr("refY", 5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 Z");
+
+        simulation.on("tick", () => {
+            linkElements
+                .attr("x1", d => d.source.x + 60)
+                .attr("y1", d => d.source.y + 30)
+                .attr("x2", d => d.target.x + 60)
+                .attr("y2", d => d.target.y + 30);
+
+            function calculateMarkerEnd(d) {
+                const angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
+                const refX = 60 + Math.cos(angle) * 30;
+                const refY = 30 + Math.sin(angle) * 30;
+                return isDirected ? `url(#arrowhead)` : null;
+            }
+
+            linkElements.attr("marker-end", calculateMarkerEnd);
+
+            nodeElements
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
         }
 
-        {% for edge in graph.edges %}
-            connect_nodes({{ edge.source.node_id }}, {{ edge.target.node_id }});
-        {% endfor %}
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
     </script>
 </body>
 </html>
