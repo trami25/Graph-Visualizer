@@ -16,6 +16,6 @@ dependencies = [
     "graph_visualizer_api",
     "os",
     "jinja2",
-    "bs4"
+    "d3/v7"
 ]
 dynamic = ["version"]
