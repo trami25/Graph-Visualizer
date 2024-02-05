@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "json_data_source_plugin"
+authors = [
+    { name = "Aleksa Janjić", email = "janjic.sv58.2021@uns.ac.rs" },
+]
+description = "JSON Data Source Plugin for Graph Visualizer"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "graph_visualizer_api",
+    "requests",
+]
+dynamic = ["version"]
+
+[project.entry-points."gv.plugins.datasource"]
+json = "json_data_source_plugin.datasource:JsonDataSource"
