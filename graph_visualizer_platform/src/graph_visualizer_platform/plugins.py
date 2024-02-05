@@ -66,6 +66,14 @@ class PluginManager:
         self._data_sources: list[Plugin[DataSource]] = load_for_group('gv.plugins.datasource')
         self._visualizers: list[Plugin[Visualizer]] = load_for_group('gv.plugins.visualizer')
 
+    @property
+    def data_sources(self) -> tuple[Plugin[DataSource], ...]:
+        return tuple(self._data_sources)
+
+    @property
+    def visualizers(self) -> tuple[Plugin[Visualizer], ...]:
+        return tuple(self._visualizers)
+
     def get_data_source_by_name(self, name: str) -> Plugin[DataSource]:
         """Gets the plugin from the data source plugins.
 
