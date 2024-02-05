@@ -4,7 +4,7 @@ import django
 from bs4 import BeautifulSoup
 
 from graph_visualizer_api.model.graph import Graph, Node, Edge
-from simple_visualizer import SimpleVisualizer
+from simple_visualizer_plugin.simple_visualizer import SimpleVisualizer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'graph_visualizer_core.settings')
 django.setup()
