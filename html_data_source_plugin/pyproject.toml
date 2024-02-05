@@ -19,3 +19,6 @@ dependencies = [
     "urllib3",
 ]
 dynamic = ["version"]
+
+[project.entry-points."gv.plugins.datasource"]
+html = "html_data_source_plugin.datasource:HtmlDataSource"
