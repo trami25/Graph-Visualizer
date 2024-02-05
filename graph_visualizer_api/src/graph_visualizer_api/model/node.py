@@ -27,3 +27,6 @@ class Node:
 
     def __hash__(self) -> int:
         return hash(self._node_id)
+
+    def __str__(self) -> str:
+        return f'Node[{self._node_id}]'
