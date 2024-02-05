@@ -36,6 +36,13 @@
         .arrowhead {
             fill: #000;
         }
+
+        .edge-label {
+            font-size: 12px;
+            fill: #000;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
     </style>
 </head>
 <body>
@@ -56,9 +63,15 @@
             .attr("stroke-width", 2)
             .attr("marker-end", isDirected ? "url(#arrowhead)" : null);
 
+        const linkLabels = svg.selectAll(".edge-label")
+            .data(links)
+            .enter().append("text")
+            .attr("class", "edge-label")
+            .text(d => d.id);
+
         const linkForce = d3.forceLink(links)
             .id(d => d.id)
-            .distance(150)
+            .distance(350)
             .strength(1)
             .iterations(1);
 
@@ -112,12 +125,27 @@
             .append("path")
             .attr("d", "M 0 0 L 10 5 L 0 10 Z");
 
+        // Adding zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 10])
+            .on("zoom", zoomed);
+
+        svg.call(zoom);
+
+        function zoomed(event) {
+            svg.attr("transform", event.transform);
+        }
+
         simulation.on("tick", () => {
             linkElements
                 .attr("x1", d => d.source.x + 60)
                 .attr("y1", d => d.source.y + 30)
                 .attr("x2", d => d.target.x + 60)
                 .attr("y2", d => d.target.y + 30);
+
+            linkLabels
+                .attr("x", d => (d.source.x + d.target.x) / 2 + 60)
+                .attr("y", d => (d.source.y + d.target.y) / 2 + 60);
 
             function calculateMarkerEnd(d) {
                 const angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
