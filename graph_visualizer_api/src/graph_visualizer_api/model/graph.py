@@ -1,3 +1,4 @@
+from .filter import Filter
 from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
@@ -112,6 +113,45 @@ class Graph:
         """
 
         return [node for node in self._nodes if kwargs.items() <= node.data.items()]
+
+    def search_and_filer(self, filters: list[Filter]) -> list[Node]:
+        """Returns a list of nodes that satisfy the given filters.
+
+        :param filters: List of filters to apply.
+        :returns: List of nodes that satisfy the filters.
+        :raise GraphError: Raised when the comparator is invalid.
+        """
+
+        nodes = []
+        for node in self._nodes:
+            satisfies_all_filters = True
+            for filter in filters:
+                if filter.attribute_name in node.data.keys():
+                    if filter.comparator == '=':
+                        satisfies_all_filters = node.data[filter.attribute_name] == filter.attribute_value
+                    elif filter.comparator == '!=':
+                        satisfies_all_filters = node.data[filter.attribute_name] != filter.attribute_value
+                    elif filter.comparator == '>':
+                        satisfies_all_filters = node.data[filter.attribute_name] > filter.attribute_value
+                    elif filter.comparator == '<':
+                        satisfies_all_filters = node.data[filter.attribute_name] < filter.attribute_value
+                    elif filter.comparator == '>=':
+                        satisfies_all_filters = node.data[filter.attribute_name] >= filter.attribute_value
+                    elif filter.comparator == '<=':
+                        satisfies_all_filters = node.data[filter.attribute_name] <= filter.attribute_value
+                    elif filter.comparator == 'search':
+                        satisfies_all_filters = node.data.keys().__contains__(filter.attribute_value) or node.data.values().__contains__(filter.attribute_value)
+                    else:
+                        raise GraphError("invalid comparator")
+
+                if not satisfies_all_filters:
+                    satisfies_all_filters = False
+                    break
+
+            if satisfies_all_filters:
+                nodes.append(node)
+
+        return nodes
 
     def __str__(self) -> str:
         nodes = ''.join([f'{node}\n' for node in self._nodes])
