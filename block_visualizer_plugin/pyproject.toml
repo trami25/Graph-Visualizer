@@ -18,6 +18,6 @@ dependencies = [
     "jinja2",
     "d3"
 ]
-[project.entry-points."gv.plugins.visualizer"]
-block = "block_visualizer_plugin.visualizer:BlockVisualiser"
 dynamic = ["version"]
+[project.entry-points."gv.plugins.visualizer"]
+block = "block_visualizer_plugin.block_visualizer:BlockVisualizer"
