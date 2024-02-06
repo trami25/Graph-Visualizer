@@ -84,10 +84,10 @@ classDiagram
     }
     class WorkspaceManager {
         + spawn() void
-        + kill(id: Long) void
+        + kill(tag: String) void
     }
     class Workspace {
-        - id: Long
+        - tag: String
         - activeDataSource: DataSourcePlugin
         - activeVisualizer: VisualizerPlugin
     }
