@@ -54,7 +54,7 @@ ROOT_URLCONF = 'graph_visualizer_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['simple_view_visualizer_plugin/template'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

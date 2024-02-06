@@ -11,19 +11,19 @@ class TreeNode:
 
     Attributes:
         node: Reference to the original graph node.
-        children: List of children nodes in the tree.
+        all_children: List of all children nodes in the tree hierarchy.
     """
 
     def __init__(self, node: Node):
         self.node = node
-        self.children = []
+        self.all_children = []
 
     def add_child(self, child_node: 'TreeNode') -> None:
         """Add a child node to the current node.
 
         :param child_node: Child node to add.
         """
-        self.children.append(child_node)
+        self.all_children.append(child_node)
 
 
 class Tree:
