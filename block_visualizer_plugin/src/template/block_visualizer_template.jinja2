@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Visualizer with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .node {
+            display: inline-block;
+            position: relative;
+        }
+
+        .node rect {
+            fill: #ddd;
+            stroke: #000;
+        }
+
+        .node h3 {
+            margin: 5px;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .node ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .node li {
+            margin: 5px;
+        }
+
+        .arrowhead {
+            fill: #000;
+        }
+
+        .edge-label {
+            font-size: 12px;
+            fill: #000;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const nodes = {{ graph.nodes | tojson }};
+        const links = {{ graph.edges | tojson }};
+        const width = 1000;
+        const height = 600;
+
+        const svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const linkElements = svg.selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 2)
+            .attr("marker-end", isDirected ? "url(#arrowhead)" : null);
+
+        const linkLabels = svg.selectAll(".edge-label")
+            .data(links)
+            .enter().append("text")
+            .attr("class", "edge-label")
+            .text(d => d.id);
+
+        const linkForce = d3.forceLink(links)
+            .id(d => d.id)
+            .distance(350)
+            .strength(1)
+            .iterations(1);
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("link", linkForce)
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const nodeElements = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        nodeElements.append("rect")
+            .attr("width", 120)
+            .attr("height", 100);
+
+        const foreignObjects = nodeElements.append("foreignObject")
+            .attr("width", 120)
+            .attr("height", function(d) {
+                const relevantAttributes = Object.keys(d)
+                    .filter(key => key !== 'id' && key !== 'x' && key !== 'y' && key !== 'index');
+                const numAttributes = relevantAttributes.length;
+                return numAttributes * 20; // Initial height + height per attribute
+            })
+            .append("xhtml:div");
+
+        foreignObjects.append("h3")
+            .text(d => d.id);
+
+        foreignObjects.append("ul")
+            .selectAll("li")
+            .data(d => Object.entries(d).filter(entry => entry[0] !== 'id')) // Show all attributes except id
+            .enter().append("li")
+            .text(entry => `${entry[0]}: ${entry[1]}`);
+
+        // Adding marker for arrowhead
+        const defs = svg.append("defs");
+        defs.append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 0 10 10")
+            .attr("refX", 35)
+            .attr("refY", 5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 Z");
+
+        // Adding zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 10])
+            .on("zoom", zoomed);
+
+        svg.call(zoom);
+
+        function zoomed(event) {
+            svg.attr("transform", event.transform);
+        }
+
+        simulation.on("tick", () => {
+            linkElements
+                .attr("x1", d => d.source.x + 60)
+                .attr("y1", d => d.source.y + 30)
+                .attr("x2", d => d.target.x + 60)
+                .attr("y2", d => d.target.y + 30);
+
+            linkLabels
+                .attr("x", d => (d.source.x + d.target.x) / 2 + 60)
+                .attr("y", d => (d.source.y + d.target.y) / 2 + 60);
+
+            function calculateMarkerEnd(d) {
+                const angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
+                const refX = 60 + Math.cos(angle) * 30;
+                const refY = 30 + Math.sin(angle) * 30;
+                return isDirected ? `url(#arrowhead)` : null;
+            }
+
+            linkElements.attr("marker-end", calculateMarkerEnd);
+
+            nodeElements
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>
