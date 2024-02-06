@@ -121,7 +121,8 @@
                 .attr("refY", 3)
                 .attr("orient", "auto")
                 .append("path")
-                .attr("d", "M0,-5L10,0L0,5");
+                .attr("d", "M0,-5L10,0L0,5")
+                .style("display", d => graph_directed ? "block" : "none");
 
             linkElements.attr("marker-end", d => `url(#arrow-${d.source.id}-${d.target.id})`);
 
