@@ -1,6 +1,8 @@
 from graph_visualizer_platform.plugins import Plugin
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
+from graph_visualizer_platform.singleton import SingletonMeta
+from graph_visualizer_platform.exceptions import WorkspaceException
 
 
 class Workspace:
@@ -43,3 +45,21 @@ class Workspace:
     def active_visualizer(self, value: Plugin[Visualizer]) -> None:
         self._active_visualizer = value
         # TODO: Set the plugin in MainView and generate template...
+
+
+class WorkspaceManager(metaclass=SingletonMeta):
+    def __init__(self):
+        self._workspaces: dict[str, Workspace] = {}
+
+    def spawn(self, tag: str, data_source: Plugin[DataSource], visualizer: Plugin[Visualizer]) -> None:
+        if self._workspaces.get(tag) is not None:
+            raise WorkspaceException(f'workspace with tag {tag} already exists')
+
+        workspace = Workspace(tag, data_source, visualizer)
+        self._workspaces[tag] = workspace
+
+    def kill(self, tag: str) -> None:
+        try:
+            del self._workspaces[tag]
+        except KeyError as e:
+            raise WorkspaceException(f'workspace with tag {tag} does not exist') from e
