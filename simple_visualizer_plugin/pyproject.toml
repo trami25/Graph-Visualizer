@@ -19,5 +19,5 @@ dependencies = [
     "d3"
 ]
 [project.entry-points."gv.plugins.visualizer"]
-simple = "simple_visualizer_plugin.simple_visualizer_plugin:SimpleVisualizer"
+simple = "simple_visualizer_plugin.simple_visualizer:SimpleVisualizer"
 dynamic = ["version"]
