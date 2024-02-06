@@ -20,32 +20,26 @@ The project consists of three main directories:
 title: Architecture
 ---
 classDiagram
-    namespace API {
-        class Graph
-        class Tree
-        class VisualizerPlugin {
-            <<interface>>
-            + generate_template(graph: Graph) String
-        }
-        class DataSourcePlugin {
-            <<interface>>
-            + generate_graph() Graph
-        }
+    class Graph
+    class Tree
+    class VisualizerPlugin {
+        <<interface>>
+        + generate_template(graph: Graph) String
     }
-    
-    namespace Platform {
-        class Service
+    class DataSourcePlugin {
+        <<interface>>
+        + generate_graph() Graph
     }
+
+    class Platform
+
+    class DjangoApp
     
-    namespace Core {
-        class DjangoApp
-    }
-    
-    VisualizerPlugin <-- Service
-    DataSourcePlugin <-- Service
-    Graph <-- Service
-    Tree <-- Service
-    Service <-- DjangoApp
+    VisualizerPlugin <-- Platform
+    DataSourcePlugin <-- Platform
+    Graph <-- Platform
+    Tree <-- Platform
+    Platform <-- DjangoApp
 ```
 
 ```mermaid
