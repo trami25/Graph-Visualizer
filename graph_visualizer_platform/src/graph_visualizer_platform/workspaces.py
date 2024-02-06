@@ -4,6 +4,7 @@ from graph_visualizer_api.visualizer import Visualizer
 from graph_visualizer_platform.singleton import SingletonMeta
 from graph_visualizer_platform.exceptions import WorkspaceException
 from typing import ItemsView, Optional
+from graph_visualizer_platform.store import GraphStore
 
 
 class Workspace:
@@ -19,6 +20,8 @@ class Workspace:
         self._tag = tag
         self.active_data_source = active_data_source
         self.active_visualizer = active_visualizer
+        self._graph_store: GraphStore = GraphStore()
+        # TODO: register listeners for graph store...
 
     @property
     def tag(self) -> str:
@@ -36,7 +39,7 @@ class Workspace:
     def active_data_source(self, value: Plugin[DataSource]) -> None:
         self._active_data_source = value
         graph = value.instance.generate_graph()
-        # TODO: Set the data store graph...
+        self._graph_store.root_graph = graph
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
