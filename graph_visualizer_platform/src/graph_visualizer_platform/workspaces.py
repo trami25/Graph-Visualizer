@@ -3,6 +3,7 @@ from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from graph_visualizer_platform.singleton import SingletonMeta
 from graph_visualizer_platform.exceptions import WorkspaceException
+from typing import ItemsView, Optional
 
 
 class Workspace:
@@ -50,6 +51,13 @@ class Workspace:
 class WorkspaceManager(metaclass=SingletonMeta):
     def __init__(self):
         self._workspaces: dict[str, Workspace] = {}
+
+    @property
+    def workspaces(self) -> ItemsView[str, Workspace]:
+        return self._workspaces.items()
+
+    def get_by_tag(self, tag: str) -> Optional[Workspace]:
+        return self._workspaces.get(tag)
 
     def spawn(self, tag: str, data_source: Plugin[DataSource], visualizer: Plugin[Visualizer]) -> None:
         if self._workspaces.get(tag) is not None:
