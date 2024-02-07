@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Graph Visualizer</h1>
-    
+
     <h3>Data source plugins</h3>
     {% if data_source_plugins %}
         <ul>
@@ -17,7 +17,7 @@
     {% else %}
         <p>No data source plugins.</p>
     {% endif %}
-    
+
     <h3>Visualizer plugins</h3>
     {% if visualizer_plugins %}
         <ul>
@@ -28,7 +28,7 @@
     {% else %}
         <p>No visualizer plugins.</p>
     {% endif %}
-    
+
     <h3>Workspaces</h3>
     {% if workspaces %}
         <ul>
@@ -39,5 +39,9 @@
     {% else %}
         <p>No workspaces.</p>
     {% endif %}
+
+    {% block workspace %}
+        <p>Select a workspace.</p>
+    {% endblock %}
 </body>
 </html>
