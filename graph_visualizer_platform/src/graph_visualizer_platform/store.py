@@ -36,8 +36,13 @@ class GraphStore:
     @root_graph.setter
     def root_graph(self, graph: Graph) -> None:
         self._root_graph = graph
+        self._subgraph = graph
         for listener in self._listeners:
             listener.on_graph_change(graph)
+
+    @property
+    def subgraph(self) -> Optional[Graph]:
+        return self._subgraph
 
     def add_listener(self, *args: GraphListener) -> None:
         """Adds a listener to the list of listeners.

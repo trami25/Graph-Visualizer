@@ -95,3 +95,9 @@ class HtmlDataSource(DataSource):
         self._process_node(self._base_url, None)
 
         return self._graph
+
+
+if __name__ == '__main__':
+    src = HtmlDataSource()
+    graph = src.generate_graph()
+    print(graph.nodes[0])

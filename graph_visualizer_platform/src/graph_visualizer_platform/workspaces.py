@@ -19,9 +19,9 @@ class Workspace:
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
         self._graph_store: GraphStore = GraphStore()
+        self._template: str = ''
         self.active_data_source = active_data_source
         self.active_visualizer = active_visualizer
-        # TODO: register listeners for graph store...
 
     @property
     def tag(self) -> str:
@@ -48,7 +48,11 @@ class Workspace:
     @active_visualizer.setter
     def active_visualizer(self, value: Plugin[Visualizer]) -> None:
         self._active_visualizer = value
-        # TODO: Set the plugin in MainView and generate template...
+        self._template = value.instance.generate_template(self._graph_store.subgraph)
+
+    @property
+    def template(self) -> str:
+        return self._template
 
 
 class WorkspaceManager(metaclass=SingletonMeta):
