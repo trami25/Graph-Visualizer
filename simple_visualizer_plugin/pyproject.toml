@@ -18,6 +18,7 @@ dependencies = [
     "jinja2",
     "d3"
 ]
+dynamic = ["version"]
+
 [project.entry-points."gv.plugins.visualizer"]
 simple = "simple_visualizer_plugin.simple_visualizer:SimpleVisualizer"
-dynamic = ["version"]
