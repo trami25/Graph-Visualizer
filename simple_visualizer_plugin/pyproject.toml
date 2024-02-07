@@ -14,9 +14,7 @@ classifiers = [
 ]
 dependencies = [
     "graph_visualizer_api",
-    "os",
     "jinja2",
-    "d3"
 ]
 dynamic = ["version"]
 

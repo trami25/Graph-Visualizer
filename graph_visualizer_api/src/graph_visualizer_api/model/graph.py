@@ -1,3 +1,5 @@
+from __future__ import annotations
+from .filter import Filter
 from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
@@ -112,6 +114,64 @@ class Graph:
         """
 
         return [node for node in self._nodes if kwargs.items() <= node.data.items()]
+
+    def search_and_filer(self, filters: list[Filter]) -> Graph:
+        """Returns a list of nodes that satisfy the given filters.
+
+        :param filters: List of filters to apply.
+        :returns: Subgraph containing nodes and edges that satisfy the filters.
+        :raise GraphError: Raised when the comparator is invalid.
+        """
+
+        nodes = []
+        for node in self._nodes:
+            satisfies_all_filters = True
+            for filter in filters:
+                if filter.attribute_name in node.data.keys() or filter.attribute_name == 'search':
+                    if filter.comparator == '=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) == filter.attribute_value
+                    elif filter.comparator == '!=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) != filter.attribute_value
+                    elif filter.comparator == '>':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) > filter.attribute_value
+                    elif filter.comparator == '<':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) < filter.attribute_value
+                    elif filter.comparator == '>=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) >= filter.attribute_value
+                    elif filter.comparator == '<=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) <= filter.attribute_value
+                    elif filter.comparator == 'contains':
+                        for key, value in node.data.items():
+                            if str(filter.attribute_value).lower() in str(key).lower() or str(
+                                    filter.attribute_value).lower() in str(value).lower():
+                                satisfies_all_filters = True
+                                break
+                            satisfies_all_filters = False
+                    else:
+                        raise GraphError("invalid comparator")
+
+                if not satisfies_all_filters:
+                    satisfies_all_filters = False
+                    break
+
+            if satisfies_all_filters:
+                nodes.append(node)
+
+        return Graph(nodes, self.add_edges(nodes))
+
+    def add_edges(self, nodes: list[Node]) -> list[Edge]:
+        """Add edges between nodes in the graph.
+
+        :param nodes: List of nodes to connect with edges.
+        :returns: List of edges that were added.
+        """
+
+        edges = []
+        for edge in self._edges:
+            if edge.source in nodes and edge.target in nodes:
+                edges.append(edge)
+
+        return edges
 
     def __str__(self) -> str:
         nodes = ''.join([f'{node}\n' for node in self._nodes])

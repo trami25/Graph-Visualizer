@@ -14,10 +14,9 @@ classifiers = [
 ]
 dependencies = [
     "graph_visualizer_api",
-    "os",
     "jinja2",
-    "d3"
 ]
 dynamic = ["version"]
+
 [project.entry-points."gv.plugins.visualizer"]
 block = "block_visualizer_plugin.block_visualizer:BlockVisualizer"

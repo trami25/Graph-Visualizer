@@ -1,7 +1,10 @@
 import unittest
+from datetime import timedelta, date
+
 from graph_visualizer_api.model.graph import Graph
 from graph_visualizer_api.model.node import Node
 from graph_visualizer_api.model.edge import Edge
+from graph_visualizer_api.model.filter import Filter
 from graph_visualizer_api.model.exceptions import GraphError
 
 
@@ -131,3 +134,23 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(2, len(graph.get_nodes_by_attributes(age=25)))
         self.assertEqual(node1, graph.get_nodes_by_attributes(name='Pera')[0])
         self.assertEqual(0, len(graph.get_nodes_by_attributes(name='Mika')))
+
+    def test_filter_and_search(self):
+        filter = Filter('search', 'contains', 'ra')
+        filter2 = Filter('date', '>=', '2024-02-06')
+        filter3 = Filter('age', '<', '22')
+        filter4 = Filter('search', 'contains', 'ra')
+        filters = [filter, filter2]
+        node1 = Node(1, {'name': 'Pera', 'lastName': 'Peria', 'age': 19, "date": date.today()+timedelta(1)})
+        node2 = Node(2, {'name': 'Djura', 'lastName': 'Perib', 'age': 20, "date": date.today()+timedelta(2)})
+        node3 = Node(3, {'name': 'Pera', 'lastName': 'Peric', 'age': 21, "date": date.today()-timedelta(2)})
+        node4 = Node(4, {'name': 'Pera', 'lastName': 'Perid', 'age': 22, "date": date.today()-timedelta(2)})
+        node5 = Node(5, {'name': 'Mika', 'lastName': 'Perie', 'age': 23, "date": date.today()+timedelta(1)})
+        edge1 = Edge(node1, node2, {})
+        edge2 = Edge(node2, node3, {})
+        edge3 = Edge(node3, node4, {})
+        graph = Graph([node1, node2, node3, node4, node5], [edge1, edge2, edge3])
+
+        self.assertEqual(2, len(graph.search_and_filer(filters).nodes))
+        self.assertEqual(3, len(graph.search_and_filer([filter3]).nodes))
+        self.assertEqual(4, len(graph.search_and_filer([filter4]).nodes))
