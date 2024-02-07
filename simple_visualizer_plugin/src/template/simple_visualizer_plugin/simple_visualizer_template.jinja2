@@ -114,7 +114,7 @@
                 .data(edges)
                 .enter().append("marker")
                 .attr("class", "arrow")
-                .attr("id", d => `arrow-${d.source.id}-${d.target.id}`)
+                .attr("id", d => `arrow-${d.source.node_id}-${d.target.node_id}`)
                 .attr("markerWidth", 10)
                 .attr("markerHeight", 10)
                 .attr("refX", 19)
@@ -146,6 +146,121 @@
                 .style("width", `${width}px`)
                 .style("height", `${height}px`);
 
+            const birdViewWidth = 300;
+            const birdViewHeight = 300;
+            let frameX = 0;
+            let frameY = 0;
+
+            const birdView = d3.select("#graph-container").append("svg")
+                .attr("width", birdViewWidth)
+                .attr("height", birdViewHeight)
+                .style("position", "absolute")
+                .style("bottom", "10px")
+                .style("right", "10px")
+                .style("border", "1px solid #000")
+                .style("background-color", "#f0f0f0");
+
+           const birdViewNodes = birdView.selectAll(".node-bird")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("class", "node-bird")
+                .attr("r", 5);
+
+            const birdViewEdges = birdView.selectAll(".link-bird")
+                .data(edges)
+                .enter().append("line")
+                .attr("class", "link-bird");
+
+            function updateBirdView() {
+                const scale = birdViewWidth / width;
+
+                birdViewNodes
+                    .attr("cx", d => d.x * scale)
+                    .attr("cy", d => d.y * scale);
+
+                birdViewEdges
+                    .attr("x1", d => d.source.x * scale)
+                    .attr("y1", d => d.source.y * scale)
+                    .attr("x2", d => d.target.x * scale)
+                    .attr("y2", d => d.target.y * scale);
+
+                const transform = d3.zoomTransform(svg.node());
+                const mainViewX = -transform.x / transform.k;
+                const mainViewY = -transform.y / transform.k;
+                const mainViewWidth = width / transform.k;
+                const mainViewHeight = height / transform.k;
+
+                frameX = mainViewX;
+                frameY = mainViewY;
+                frameWidth = mainViewWidth;
+                frameHeight = mainViewHeight;
+
+                updateFrame();
+            }
+
+
+
+            function updateFrame() {
+                return new Promise(resolve => {
+                    const transform = d3.zoomTransform(svg.node());
+                    const scale = birdViewWidth / width;
+
+                    const mainViewX = -transform.x / transform.k;
+                    const mainViewY = -transform.y / transform.k;
+
+                    frameX = mainViewX;
+                    frameY = mainViewY;
+                    frameWidth = width / transform.k;
+                    frameHeight = height / transform.k;
+
+                    birdView.selectAll(".frame").remove();
+
+                    birdView.append("rect")
+                        .attr("class", "frame")
+                        .attr("x", frameX * scale)
+                        .attr("y", frameY * scale)
+                        .attr("width", frameWidth * scale)
+                        .attr("height", frameHeight * scale)
+                        .style("fill", "none")
+                        .style("stroke", "#ff0000")
+                        .style("stroke-width", 2);
+
+                    resolve();
+                });
+            }
+
+            simulation.on("end", () => {
+                updateBirdView();
+                updateFrameFromMainView();
+            });
+
+            function updateFrameFromMainView() {
+                const transform = d3.zoomTransform(svg.node());
+                const scale = birdViewWidth / width;
+
+                const mainViewX = -transform.x / transform.k;
+                const mainViewY = -transform.y / transform.k;
+
+                frameX = mainViewX;
+                frameY = mainViewY;
+
+                updateFrame();
+            }
+
+            window.addEventListener("resize", () => {
+                updateBirdView().then(() => {
+                    updateFrameFromMainView();
+                });
+            });
+
+            function zoomed(event) {
+                svg.attr("transform", event.transform);
+                updateBirdView().then(() => {
+                    updateFrameFromMainView();
+                });
+            }
+
+
             function dragstarted(event, d) {
                 if (!event.active) simulation.alphaTarget(0.3).restart();
                 d.fx = d.x;
@@ -155,27 +270,28 @@
             function dragged(event, d) {
                 d.fx = event.x;
                 d.fy = event.y;
+		simulation.alpha(1).restart();
+    		updateBirdView();
+
             }
 
             function dragended(event, d) {
                 if (!event.active) simulation.alphaTarget(0);
                 d.fx = null;
                 d.fy = null;
-            }
-
-            function zoomed(event) {
-                svg.attr("transform", event.transform);
+		updateBirdView();
             }
 
             function showDetails(event, d) {
                 d3.select("#details")
                     .style("display", "block")
-                    .html(JSON.stringify(d.data || d, 4));
+                    .html(JSON.stringify(d.data || d, null, 4));
             }
 
             function hideDetails() {
                 d3.select("#details").style("display", "none");
             }
+
         </script>
     </div>
 </body>
