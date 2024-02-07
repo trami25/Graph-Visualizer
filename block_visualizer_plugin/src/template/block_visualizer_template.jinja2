@@ -47,8 +47,8 @@
 </head>
 <body>
     <script>
-        const nodes = {{ graph.nodes | tojson }};
-        const links = {{ graph.edges | tojson }};
+        let nodes = JSON.parse('{{ nodes_json|safe }}');
+        let edges = JSON.parse('{{ edges_json|safe }}');
         const width = 1000;
         const height = 600;
 
