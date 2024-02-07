@@ -6,5 +6,17 @@
 </head>
 <body>
     <h1>Graph Visualizer</h1>
+    <h3>Data source plugins</h3>
+    <ul>
+        {% for plugin in data_source_plugins %}
+            <li>{{ plugin.name }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Visualizer plugins</h3>
+    <ul>
+        {% for plugin in visualizer_plugins %}
+            <li>{{ plugin.name }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
