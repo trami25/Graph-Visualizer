@@ -14,14 +14,14 @@ class Plugin(Generic[T]):
     Attributes:
         _name: Name of the plugin.
         _plugin_type: The plugin class.
-        _instance: The instance of the plugin. Is None when the plugin created and is only instantiated when a getter is
+        _instance: The instance of the plugin.
         called.
     """
 
-    def __init__(self, name: str, plugin_type: Type[T]):
+    def __init__(self, name: str, plugin_type: Type[T], instance: T = None):
         self._name = name
         self._plugin_type = plugin_type
-        self._instance: T = None
+        self._instance = instance
 
     @property
     def name(self) -> str:
