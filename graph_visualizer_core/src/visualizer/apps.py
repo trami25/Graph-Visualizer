@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class GraphvisualizerConfig(AppConfig):
+class VisualizerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'graphvisualizer'
+    name = 'visualizer'
