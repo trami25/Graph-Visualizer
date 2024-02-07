@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponseBadRequest
 
 from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
+from graph_visualizer_platform.exceptions import WorkspaceException
 
 
 # Create your views here.
@@ -42,11 +43,27 @@ def new_workspace(request):
     workspace_manager = WorkspaceManager()
     plugin_manager = PluginManager()
 
-    workspace = workspace_manager.get_by_tag(request.POST['tag'])
-    if workspace is not None:
-        return HttpResponseBadRequest('Workspace already exists.')
+    if len(request.POST['tag']) <= 0:  # TODO: maybe add this to workspace manager?
+        return HttpResponseBadRequest('Tag cannot be empty.')
 
-    workspace_manager.spawn(request.POST['tag'], plugin_manager.get_data_source_by_name('html'),
-                            plugin_manager.get_visualizer_by_name('simple'))
+    try:
+        workspace_manager.spawn(request.POST['tag'], plugin_manager.get_data_source_by_name('html'),
+                                plugin_manager.get_visualizer_by_name('simple'))
+    except WorkspaceException as e:
+        return HttpResponseBadRequest(e)
+
+    return redirect('index')
+
+
+def remove_workspace(request):
+    workspace_manager = WorkspaceManager()
+
+    if len(request.POST['tag']) <= 0:
+        return HttpResponseBadRequest('Tag cannot be empty.')
+
+    try:
+        workspace_manager.kill(request.POST['tag'])
+    except WorkspaceException as e:
+        return HttpResponseBadRequest(e)
 
     return redirect('index')
