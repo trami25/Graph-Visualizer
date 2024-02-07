@@ -9,13 +9,9 @@ from graph_visualizer_platform.exceptions import WorkspaceException
 
 # Create your views here.
 def index(request):
-    data_source_plugins = apps.get_app_config('visualizer').data_source_plugins
-    visualizer_plugins = apps.get_app_config('visualizer').visualizer_plugins
     workspaces = apps.get_app_config('visualizer').workspaces
     return render(request, 'visualizer/base.html',
                   context={
-                      'data_source_plugins': data_source_plugins,
-                      'visualizer_plugins': visualizer_plugins,
                       'workspaces': workspaces
                   })
 
@@ -65,5 +61,20 @@ def remove_workspace(request):
         workspace_manager.kill(request.POST['tag'])
     except WorkspaceException as e:
         return HttpResponseBadRequest(e)
+
+    return redirect('index')
+
+
+def workspace_plugins(request, tag):
+    workspace_manager = WorkspaceManager()
+    plugin_manager = PluginManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    if request.POST['source'] != workspace.active_data_source.name:
+        workspace.active_data_source = plugin_manager.get_data_source_by_name(request.POST['source'])
+
+    if request.POST['visualizer'] != workspace.active_visualizer.name:
+        workspace.active_visualizer = plugin_manager.get_visualizer_by_name(request.POST['visualizer'])
 
     return redirect('index')
