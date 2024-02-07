@@ -48,7 +48,8 @@
 <body>
     <script>
         let nodes = JSON.parse('{{ nodes_json|safe }}');
-        let edges = JSON.parse('{{ edges_json|safe }}');
+        let links = JSON.parse('{{ edges_json|safe }}');
+        let isDirected = false;
         const width = 1000;
         const height = 600;
 
@@ -67,10 +68,10 @@
             .data(links)
             .enter().append("text")
             .attr("class", "edge-label")
-            .text(d => d.id);
+            .text(d => d.node_id);
 
         const linkForce = d3.forceLink(links)
-            .id(d => d.id)
+            .id(d => d.node_id)
             .distance(350)
             .strength(1)
             .iterations(1);
@@ -104,7 +105,7 @@
             .append("xhtml:div");
 
         foreignObjects.append("h3")
-            .text(d => d.id);
+            .text(d => d.node_id);
 
         foreignObjects.append("ul")
             .selectAll("li")
