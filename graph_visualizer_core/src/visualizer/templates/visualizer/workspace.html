@@ -1,4 +1,8 @@
 {% extends "visualizer/base.html" %}
 {% block workspace %}
-	<p>{{ tag }}</p>
+	<h2>Workspace: {{ active_workspace.tag }}</h2>
+    <ul>
+        <li>Active data source: {{ active_workspace.active_data_source }}</li>
+        <li>Active visualizer: {{ active_workspace.active_visualizer }}</li>
+    </ul>
 {% endblock %}
