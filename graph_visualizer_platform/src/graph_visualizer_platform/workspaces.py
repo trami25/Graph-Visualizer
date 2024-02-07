@@ -18,9 +18,9 @@ class Workspace:
 
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
+        self._graph_store: GraphStore = GraphStore()
         self.active_data_source = active_data_source
         self.active_visualizer = active_visualizer
-        self._graph_store: GraphStore = GraphStore()
         # TODO: register listeners for graph store...
 
     @property

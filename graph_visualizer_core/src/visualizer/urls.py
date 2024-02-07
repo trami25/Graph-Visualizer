@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<str:tag>/", views.workspace_view, name="workspace"),
+    path("workspace/<str:tag>/", views.workspace_view, name="workspace"),
+    path("new/", views.new_workspace, name="new")
 ]

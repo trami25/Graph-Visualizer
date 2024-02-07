@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.apps.registry import apps
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
+
+from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
 
 
@@ -34,3 +36,17 @@ def workspace_view(request, tag):
                       'workspaces': workspaces,
                       'active_workspace': active_workspace
                   })
+
+
+def new_workspace(request):
+    workspace_manager = WorkspaceManager()
+    plugin_manager = PluginManager()
+
+    workspace = workspace_manager.get_by_tag(request.POST['tag'])
+    if workspace is not None:
+        return HttpResponseBadRequest('Workspace already exists.')
+
+    workspace_manager.spawn(request.POST['tag'], plugin_manager.get_data_source_by_name('html'),
+                            plugin_manager.get_visualizer_by_name('simple'))
+
+    return redirect('index')

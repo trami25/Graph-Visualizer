@@ -33,12 +33,21 @@
     {% if workspaces %}
         <ul>
             {% for workspace in workspaces %}
-                <li>{{ workspace.tag }}</li>
+                <li><a href="/workspace/{{ workspace.0 }}">{{ workspace.0 }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
         <p>No workspaces.</p>
     {% endif %}
+
+    <form action="/new/" method="post">
+        {% csrf_token %}
+        <label>
+            Tag:
+            <input name="tag" type="text">
+        </label>
+        <button type="submit">Create new workspace</button>
+    </form>
 
     {% block workspace %}
         <p>Select a workspace.</p>

@@ -21,7 +21,7 @@ class HtmlDataSource(DataSource):
         _graph: Parsed graph.
     """
 
-    def __init__(self, base_url: str = 'http://www.scrapethissite.com', node_cap: int = 200):
+    def __init__(self, base_url: str = 'http://www.scrapethissite.com', node_cap: int = 20):
         self._base_url = base_url
         self._node_cap = node_cap
         self._next_node_id = 1

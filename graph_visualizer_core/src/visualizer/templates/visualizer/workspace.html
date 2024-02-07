@@ -2,7 +2,7 @@
 {% block workspace %}
 	<h2>Workspace: {{ active_workspace.tag }}</h2>
     <ul>
-        <li>Active data source: {{ active_workspace.active_data_source }}</li>
-        <li>Active visualizer: {{ active_workspace.active_visualizer }}</li>
+        <li>Active data source: {{ active_workspace.active_data_source.name }}</li>
+        <li>Active visualizer: {{ active_workspace.active_visualizer.name }}</li>
     </ul>
 {% endblock %}
