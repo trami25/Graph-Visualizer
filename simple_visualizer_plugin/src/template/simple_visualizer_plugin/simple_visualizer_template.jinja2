@@ -57,8 +57,8 @@
         <div id="graph-outline"></div>
         <div id="details"></div>
         <script>
-            let nodes = JSON.parse('{{ graph.nodes|tojson|safe }}');
-            let edges = JSON.parse('{{ graph.edges|tojson|safe }}');
+            let nodes = JSON.parse('{{ nodes_json|safe }}');
+            let edges = JSON.parse('{{ edges_json|safe }}');
             let graph_directed = true;
 
             const width = 1000;
