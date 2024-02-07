@@ -31,7 +31,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/simple_view_visualizer_plugin/template" />
+        <option value="$MODULE_DIR$/graph_visualizer_core/src/visualizer/templates" />
       </list>
     </option>
   </component>

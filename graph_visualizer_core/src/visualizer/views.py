@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Graph Visualizer")
+    return render(request, 'visualizer/index.html')
