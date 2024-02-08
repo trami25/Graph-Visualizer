@@ -17,5 +17,6 @@ classifiers = [
 ]
 dependencies = [
     "graph_visualizer_api",
+    "importlib-metadata"
 ]
 dynamic = ["version"]

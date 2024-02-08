@@ -14,14 +14,16 @@ class Workspace:
         _tag: The tag of the workspace.
         _active_data_source: The currently active data source plugin for this workspace.
         _active_visualizer: The currently active visualizer plugin for this workspace.
+        _graph_store: Graph store for the current workspace.
+        _template: The current template for the current workspace.
     """
 
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
+        self._graph_store: GraphStore = GraphStore()
+        self._template: str = ''
         self.active_data_source = active_data_source
         self.active_visualizer = active_visualizer
-        self._graph_store: GraphStore = GraphStore()
-        # TODO: register listeners for graph store...
 
     @property
     def tag(self) -> str:
@@ -48,10 +50,19 @@ class Workspace:
     @active_visualizer.setter
     def active_visualizer(self, value: Plugin[Visualizer]) -> None:
         self._active_visualizer = value
-        # TODO: Set the plugin in MainView and generate template...
+        self._template = value.instance.generate_template(self._graph_store.subgraph)
+
+    @property
+    def template(self) -> str:
+        return self._template
 
 
 class WorkspaceManager(metaclass=SingletonMeta):
+    """Manages workspaces.
+
+    Attributes:
+        _workspaces: List of existing workspaces.
+    """
     def __init__(self):
         self._workspaces: dict[str, Workspace] = {}
 
@@ -60,9 +71,23 @@ class WorkspaceManager(metaclass=SingletonMeta):
         return self._workspaces.items()
 
     def get_by_tag(self, tag: str) -> Optional[Workspace]:
+        """Gets workspace by tag
+
+        :param tag: Tag to search workspaces by.
+        :return: Workspace or None if there is no matching tag.
+        """
+
         return self._workspaces.get(tag)
 
     def spawn(self, tag: str, data_source: Plugin[DataSource], visualizer: Plugin[Visualizer]) -> None:
+        """Create a new workspace.
+
+        :param tag: Tag for the new workspace.
+        :param data_source: Data source that the new workspace will use.
+        :param visualizer: Visualizer that the new workspace will use.
+        :raise WorkspaceException: Raised when the workspace with the given tag already exists.
+        """
+
         if self._workspaces.get(tag) is not None:
             raise WorkspaceException(f'workspace with tag {tag} already exists')
 
@@ -70,6 +95,12 @@ class WorkspaceManager(metaclass=SingletonMeta):
         self._workspaces[tag] = workspace
 
     def kill(self, tag: str) -> None:
+        """Remove an existing workspace.
+
+        :param tag: Tag of the workspace to be removed.
+        :raise WorkspaceException: Raised when the workspace with the given tag does not exist.
+        """
+
         try:
             del self._workspaces[tag]
         except KeyError as e:
