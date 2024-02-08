@@ -1,5 +1,6 @@
 import json
 import re
+import os
 
 def provide_json_data(filepath: str) -> dict:
     create_json_data(filepath)
@@ -12,7 +13,7 @@ def provide_json_data(filepath: str) -> dict:
 def create_json_data(filepath: str):
     my_name = "pharaohs.son"
     include_me = False
-    input_txt_file = "json_data_source_plugin\\relations.txt"
+    input_txt_file = os.path.join(os.path.dirname(__file__), "..", "..", "relations.txt")
     output_json_file = filepath
 
     nodes = set()
