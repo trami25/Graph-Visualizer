@@ -11,9 +11,10 @@
             position: relative;
         }
 
-        .node rect {
+       .node rect {
             fill: #ddd;
             stroke: #000;
+
         }
 
         .node h3 {
@@ -70,11 +71,10 @@
 <body>
 	 <div id="graph-container">
         <div id="graph-outline"></div>
-        <div id="details"></div>
     <script>
         let nodes = JSON.parse('{{ nodes_json|safe }}');
         let links = JSON.parse('{{ edges_json|safe }}');
-        let isDirected = false;
+        let isDirected = true;
         const width = 1000;
         const height = 600;
 
@@ -105,7 +105,8 @@
             .iterations(1);
 
         const simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-50))
+            .force("charge", d3.forceManyBody().strength(-2000))
+            .force("collide", d3.forceCollide(200))
             .force("link", linkForce)
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -122,12 +123,14 @@
             .attr("width", 120)
             .attr("height", 100);
 
+        let duzina;
         const foreignObjects = nodeElements.append("foreignObject")
             .attr("width", 120)
             .attr("height", function(d) {
                 const relevantAttributes = Object.keys(d)
                     .filter(key => key !== 'id' && key !== 'x' && key !== 'y' && key !== 'index');
                 const numAttributes = relevantAttributes.length;
+                duzina = (numAttributes + 1) * 20;
                 return numAttributes * 20; // Initial height + height per attribute
             })
             .append("xhtml:div");
@@ -137,7 +140,7 @@
 
         foreignObjects.append("ul")
             .selectAll("li")
-            .data(d => Object.entries(d).filter(entry => entry[0] !== 'id')) // Show all attributes except id
+            .data(d => Object.entries(d.data).filter(entry => entry[0] !== 'node_id')) // Show all attributes except id
             .enter().append("li")
             .text(entry => `${entry[0]}: ${entry[1]}`);
 
@@ -146,13 +149,16 @@
         defs.append("marker")
             .attr("id", "arrowhead")
             .attr("viewBox", "0 0 10 10")
-            .attr("refX", 35)
+            .attr("refX", 8)
             .attr("refY", 5)
             .attr("markerWidth", 6)
             .attr("markerHeight", 6)
             .attr("orient", "auto")
             .append("path")
             .attr("d", "M 0 0 L 10 5 L 0 10 Z");
+
+
+
 
         d3.select("#graph-outline")
                 .style("width", `${width}px`)
@@ -275,11 +281,39 @@
         }
 
         simulation.on("tick", () => {
-            linkElements
-                .attr("x1", d => d.source.x + 60)
-                .attr("y1", d => d.source.y + 30)
-                .attr("x2", d => d.target.x + 60)
-                .attr("y2", d => d.target.y + 30);
+          linkElements.each(function(d) {
+
+            const sourceX = d.source.x + 120 / 2; // X koordinata centra čvora
+            const sourceY = d.source.y + duzina / 2; // Y koordinata centra čvora
+            const targetX = d.target.x + 120 / 2; // X koordinata centra čvora
+            const targetY = d.target.y + duzina / 2; // Y koordinata centra čvora
+
+            // Izračunaj razliku u x i y koordinatama
+            const dx = targetX - sourceX;
+            const dy = targetY - sourceY;
+
+            // Izračunaj dužinu vektora
+            const length = Math.sqrt(dx * dx + dy * dy);
+
+            // Normalizuj vektor
+            const unitDx = dx / length;
+            const unitDy = dy / length;
+
+            // Definiši ivicu čvora kao offset od centra čvora
+            const nodeEdgeOffset = 10; // Prilagodite ovu vrednost prema potrebama
+
+            // Izračunaj koordinate tačaka početka i kraja linije tako da idu do ivice čvorova
+            const edgeSourceX = sourceX + (unitDx * (120 / 2 + nodeEdgeOffset));
+            const edgeSourceY = sourceY + (unitDy * (duzina / 2 + nodeEdgeOffset));
+            const edgeTargetX = targetX - (unitDx * (120 / 2 + nodeEdgeOffset));
+            const edgeTargetY = targetY - (unitDy * (duzina / 2 + nodeEdgeOffset));
+
+            // Postavi koordinate tačaka početka i kraja linije
+            d3.select(this).attr("x1", edgeSourceX)
+                           .attr("y1", edgeSourceY)
+                           .attr("x2", edgeTargetX)
+                           .attr("y2", edgeTargetY);
+        });
 
             linkLabels
                 .attr("x", d => (d.source.x + d.target.x) / 2 + 60)
