@@ -1,15 +1,10 @@
 from __future__ import annotations
+from importlib.metadata import entry_points
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from typing import TypeVar, Type, Generic
 from graph_visualizer_platform.exceptions import PluginException
 from graph_visualizer_platform.singleton import SingletonMeta
-
-import sys
-if sys.version_info < (3, 10):
-    from importlib_metadata import entry_points
-else:
-    from importlib.metadata import entry_points
 
 T = TypeVar('T')
 
