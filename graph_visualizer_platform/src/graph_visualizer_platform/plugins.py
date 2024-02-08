@@ -4,6 +4,7 @@ from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from typing import TypeVar, Type, Generic
 from graph_visualizer_platform.exceptions import PluginException
+from graph_visualizer_platform.singleton import SingletonMeta
 
 T = TypeVar('T')
 
@@ -51,7 +52,7 @@ def load_for_group(group: str) -> list[Plugin]:
     return plugins
 
 
-class PluginManager:
+class PluginManager(metaclass=SingletonMeta):
     """Manages the plugins from the environment
 
     This class upon creation loads the plugins from the python environment and stores them in lists.
