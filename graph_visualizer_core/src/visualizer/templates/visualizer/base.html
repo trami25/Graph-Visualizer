@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph Visualizer</title>
+</head>
+<body>
+    <h1>Graph Visualizer</h1>
+    <h3>Workspaces</h3>
+    {% if workspaces %}
+        <ul>
+            {% for workspace in workspaces %}
+                <li><a href="/workspace/{{ workspace.0 }}">{{ workspace.0 }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No workspaces.</p>
+    {% endif %}
+
+    <form action="/new/" method="post">
+        {% csrf_token %}
+        <label>
+            Tag:
+            <input name="tag" type="text">
+        </label>
+        <button type="submit">Create new workspace</button>
+    </form>
+    <form action="/remove/" method="post">
+        {% csrf_token %}
+        <label>
+            Tag:
+            <input name="tag" type="text">
+        </label>
+        <button type="submit">Delete workspace</button>
+    </form>
+
+    {% block workspace %}
+        <p>Select a workspace.</p>
+    {% endblock %}
+</body>
+</html>

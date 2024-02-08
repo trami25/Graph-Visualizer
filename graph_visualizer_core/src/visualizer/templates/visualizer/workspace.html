@@ -1,0 +1,29 @@
+{% extends "visualizer/base.html" %}
+{% block workspace %}
+	<h2>Workspace: {{ active_workspace.tag }}</h2>
+    <ul>
+        <li>Active data source: {{ active_workspace.active_data_source.name }} <a href="/config/{{ active_workspace.active_data_source.name }}">configure</a></li>
+        <li>Active visualizer: {{ active_workspace.active_visualizer.name }}</li>
+    </ul>
+    <form action="/workspace/{{ active_workspace.tag }}/plugins/" method="post">
+        {% csrf_token %}
+        <label>
+            Change data source:
+            <select name="source">
+                {% for plugin in data_source_plugins %}
+                    <option value={{ plugin.name }}>{{ plugin.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Change visualizer:
+            <select name="visualizer">
+                {% for plugin in visualizer_plugins %}
+                    <option value={{ plugin.name }}>{{ plugin.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button type="submit">Change</button>
+    </form>
+    <p>{{ active_workspace.template }}</p>
+{% endblock %}

@@ -1,3 +1,5 @@
+from __future__ import annotations
+from .filter import Filter
 from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
@@ -13,15 +15,17 @@ class Graph:
     Attributes:
         nodes: List of nodes.
         edges: List of edges.
+        directed: Boolean indicating if the graph is directed.
     """
 
-    def __init__(self, nodes: list[Node], edges: list[Edge]):
+    def __init__(self, nodes: list[Node], edges: list[Edge], directed: bool = False):
         for edge in edges:
             if edge.source not in nodes or edge.target not in nodes:
                 raise GraphError("non existent node in edge")
 
         self._nodes = nodes
         self._edges = edges
+        self._directed = directed
 
     @property
     def nodes(self) -> list[Node]:
@@ -30,6 +34,10 @@ class Graph:
     @property
     def edges(self) -> list[Edge]:
         return self._edges
+
+    @property
+    def directed(self) -> bool:
+        return self._directed
 
     def add_node(self, node: Node) -> None:
         """Add a node to the graph.
@@ -113,6 +121,66 @@ class Graph:
         """
 
         return [node for node in self._nodes if kwargs.items() <= node.data.items()]
+
+    def search_and_filter(self, filters: list[Filter]) -> Graph:
+        """Returns a list of nodes that satisfy the given filters.
+
+        :param filters: List of filters to apply.
+        :returns: Subgraph containing nodes and edges that satisfy the filters.
+        :raise GraphError: Raised when the comparator is invalid.
+        """
+
+        nodes = []
+        if len(filters) == 0:
+            return self
+        for node in self._nodes:
+            satisfies_all_filters = False
+            for filter in filters:
+                if filter.attribute_name in node.data.keys() or filter.attribute_name == 'search':
+                    if filter.comparator == '=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) == filter.attribute_value
+                    elif filter.comparator == '!=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) != filter.attribute_value
+                    elif filter.comparator == '>':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) > filter.attribute_value
+                    elif filter.comparator == '<':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) < filter.attribute_value
+                    elif filter.comparator == '>=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) >= filter.attribute_value
+                    elif filter.comparator == '<=':
+                        satisfies_all_filters = str(node.data[filter.attribute_name]) <= filter.attribute_value
+                    elif filter.comparator == 'contains':
+                        for key, value in node.data.items():
+                            if str(filter.attribute_value).lower() in str(key).lower() or str(
+                                    filter.attribute_value).lower() in str(value).lower():
+                                satisfies_all_filters = True
+                                break
+                            satisfies_all_filters = False
+                    else:
+                        raise GraphError("invalid comparator")
+
+                if not satisfies_all_filters:
+                    satisfies_all_filters = False
+                    break
+
+            if satisfies_all_filters:
+                nodes.append(node)
+
+        return Graph(nodes, self.add_edges(nodes), self._directed)
+
+    def add_edges(self, nodes: list[Node]) -> list[Edge]:
+        """Add edges between nodes in the graph.
+
+        :param nodes: List of nodes to connect with edges.
+        :returns: List of edges that were added.
+        """
+
+        edges = []
+        for edge in self._edges:
+            if edge.source in nodes and edge.target in nodes:
+                edges.append(edge)
+
+        return edges
 
     def __str__(self) -> str:
         nodes = ''.join([f'{node}\n' for node in self._nodes])
