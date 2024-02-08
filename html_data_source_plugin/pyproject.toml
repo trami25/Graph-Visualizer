@@ -17,6 +17,7 @@ dependencies = [
     "graph_visualizer_api",
     "requests",
     "urllib3",
+    "toml",
 ]
 dynamic = ["version"]
 
