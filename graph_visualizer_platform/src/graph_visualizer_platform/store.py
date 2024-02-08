@@ -57,21 +57,24 @@ class GraphStore:
         :param prompt: String to parse into a filter.
         :return:
         """
-        filter = self._parse_prompt(prompt)
-        if filter.attribute_value != '':
+        try:
+            filter = self._parse_prompt(prompt)
             self._filters.append(filter)
             self._subgraph = self._subgraph.search_and_filer([filter])
+        except ValueError:
+            raise ValueError("Invalid filter")
 
     def remove_filter(self, prompt: str) -> None:
         """
         Removes a filter from the subgraph.
         :param prompt: String to parse into a filter.
         """
-
-        filter = self._parse_prompt(prompt)
-        if filter in self._filters:
+        try:
+            filter = self._parse_prompt(prompt)
             self._filters.remove(filter)
             self._subgraph = self._root_graph.search_and_filer(self._filters)
+        except ValueError:
+            raise ValueError("Invalid filter")
 
     @staticmethod
     def _parse_prompt(prompt: str) -> Filter:
@@ -83,6 +86,6 @@ class GraphStore:
         """
         filter_tokens = prompt.split()
         if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', 'contains']:
-            return Filter('search', 'contains', '')
+            raise ValueError("Invalid filter")
         return Filter(filter_tokens[0], filter_tokens[1], filter_tokens[2])
 

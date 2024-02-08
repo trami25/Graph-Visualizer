@@ -137,7 +137,7 @@ class TestGraph(unittest.TestCase):
 
     def test_filter_and_search(self):
         filter = Filter('search', 'contains', 'ra')
-        filter2 = Filter('date', '>=', '2024-02-06')
+        filter2 = Filter('date', '>=', str(date.today()))
         filter3 = Filter('age', '<', '22')
         filter4 = Filter('search', 'contains', 'ra')
         filters = [filter, filter2]

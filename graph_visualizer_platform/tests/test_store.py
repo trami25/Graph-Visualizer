@@ -24,7 +24,8 @@ class TestStore(unittest.TestCase):
     def test_add_filter_invalid_filter(self):
         string_filter = "name= test"
         string_filter2 = "search contains 2"
-        self.store.add_filter(string_filter)
+        with self.assertRaises(ValueError):
+            self.store.add_filter(string_filter)
         self.store.add_filter(string_filter2)
 
         self.assertEqual(1, len(self.store._filters))
@@ -34,8 +35,10 @@ class TestStore(unittest.TestCase):
         # self.store._root_graph = Graph([node1, node2], [])
         string_filter = "name = test e"
         string_filter2 = "search contains2"
-        self.store.add_filter(string_filter)
-        self.store.add_filter(string_filter2)
+        with self.assertRaises(ValueError):
+            self.store.add_filter(string_filter)
+        with self.assertRaises(ValueError):
+            self.store.add_filter(string_filter2)
 
         self.assertEqual(0, len(self.store._filters))
         self.assertEqual(3, len(self.store._subgraph.nodes))
@@ -53,10 +56,12 @@ class TestStore(unittest.TestCase):
         string_filter = "name = test"
         string_filter2 = "search contains 2 e"
         self.store.add_filter(string_filter)
-        self.store.add_filter(string_filter2)
-        self.store.remove_filter(string_filter)
-        self.assertEqual(0, len(self.store._filters))
-        self.assertEqual(3, len(self.store._subgraph.nodes))
+        with self.assertRaises(ValueError):
+            self.store.add_filter(string_filter2)
+        with self.assertRaises(ValueError):
+            self.store.remove_filter(string_filter2)
+        self.assertEqual(1, len(self.store._filters))
+        self.assertEqual(2, len(self.store._subgraph.nodes))
 
     def test_remove_filter_mix(self):
         string_filter = "name = test"
