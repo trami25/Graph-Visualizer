@@ -21,9 +21,10 @@ class Workspace:
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
         self._graph_store: GraphStore = GraphStore()
-        self._template: str = ''
-        self.active_data_source = active_data_source
-        self.active_visualizer = active_visualizer
+        self._active_data_source = active_data_source
+        self._graph_store.root_graph = active_data_source.instance.generate_graph()
+        self._active_visualizer = active_visualizer
+        self._template = active_visualizer.instance.generate_template(self._graph_store.root_graph)
 
     @property
     def tag(self) -> str:
@@ -42,6 +43,7 @@ class Workspace:
         self._active_data_source = value
         graph = value.instance.generate_graph()
         self._graph_store.root_graph = graph
+        self._template = self.active_visualizer.instance.generate_template(graph)
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
