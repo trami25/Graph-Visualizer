@@ -35,7 +35,6 @@ def get_metadata(soup: BeautifulSoup) -> dict[str, str]:
     charset = soup.find('meta[charset]')
 
     return {
-        #'title': soup.title if soup.title else 'No title',
-        #'description': description['content'] if description else 'No description',
-        #'charset': charset['charset'] if charset else 'No charset',
+        'description': description['content'] if description else 'No description',
+        'charset': charset['charset'] if charset else 'No charset',
     }
