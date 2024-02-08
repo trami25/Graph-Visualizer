@@ -1,0 +1,1 @@
+tree = Tree.from_graph(graph, 4)
