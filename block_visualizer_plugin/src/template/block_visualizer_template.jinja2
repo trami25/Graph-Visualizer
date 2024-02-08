@@ -35,7 +35,7 @@
         }
 
         .arrowhead {
-            fill: #000;
+            fill: #cbcbcb;
         }
 
         .edge-label {
@@ -52,7 +52,7 @@
 
         .link-bird {
             fill: none;
-            stroke: #000;
+            stroke: #808080;
             stroke-width: 0.5;
         }
 	 #graph-container {
@@ -250,7 +250,10 @@
         function updateFrame() {
             return new Promise(resolve => {
                 const transform = d3.zoomTransform(svg.node());
-                const scale = birdViewWidth / width;
+                const graphExtent = getGraphExtent();
+                const scaleX = birdViewWidth / graphExtent.width;
+                const scaleY = birdViewHeight / graphExtent.height;
+                const scale = Math.min(scaleX, scaleY);
 
                 const mainViewX = -transform.x / transform.k;
                 const mainViewY = -transform.y / transform.k;
@@ -264,8 +267,8 @@
 
                 birdView.append("rect")
                     .attr("class", "frame")
-                    .attr("x", frameX * scale)
-                    .attr("y", frameY * scale)
+                    .attr("x", (frameX - graphExtent.minX) * scale)
+                    .attr("y", (frameY - graphExtent.minY) * scale)
                     .attr("width", frameWidth * scale)
                     .attr("height", frameHeight * scale)
                     .style("fill", "none")

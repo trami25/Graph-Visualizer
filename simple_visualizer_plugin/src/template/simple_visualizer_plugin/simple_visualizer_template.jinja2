@@ -26,7 +26,7 @@
         }
 
         .arrow {
-            fill: #000;
+            fill: rgb(128, 128, 128);
         }
 
         .node-bird rect {
@@ -37,7 +37,7 @@
 
         .link-bird {
             fill: none;
-            stroke: #000;
+            stroke: #828282;
             stroke-width: 0.5;
         }
         #graph-container {
@@ -239,32 +239,35 @@
 
             function updateFrame() {
                 return new Promise(resolve => {
-                    const transform = d3.zoomTransform(svg.node());
-                    const scale = birdViewWidth/width;
+                const transform = d3.zoomTransform(svg.node());
+                const graphExtent = getGraphExtent();
+                const scaleX = birdViewWidth / graphExtent.width;
+                const scaleY = birdViewHeight / graphExtent.height;
+                const scale = Math.min(scaleX, scaleY);
 
-                    const mainViewX = -transform.x / transform.k;
-                    const mainViewY = -transform.y / transform.k;
+                const mainViewX = -transform.x / transform.k;
+                const mainViewY = -transform.y / transform.k;
 
-                    frameX = mainViewX;
-                    frameY = mainViewY;
-                    frameWidth = width / transform.k;
-                    frameHeight = height / transform.k;
+                frameX = mainViewX;
+                frameY = mainViewY;
+                frameWidth = width / transform.k;
+                frameHeight = height / transform.k;
 
-                    birdView.selectAll(".frame").remove();
+                birdView.selectAll(".frame").remove();
 
-                    birdView.append("rect")
-                        .attr("class", "frame")
-                        .attr("x", frameX * scale)
-                        .attr("y", frameY * scale)
-                        .attr("width", frameWidth * scale)
-                        .attr("height", frameHeight * scale)
-                        .style("fill", "none")
-                        .style("stroke", "#ff0000")
-                        .style("stroke-width", 2);
+                birdView.append("rect")
+                    .attr("class", "frame")
+                    .attr("x", (frameX - graphExtent.minX) * scale)
+                    .attr("y", (frameY - graphExtent.minY) * scale)
+                    .attr("width", frameWidth * scale)
+                    .attr("height", frameHeight * scale)
+                    .style("fill", "none")
+                    .style("stroke", "#ff0000")
+                    .style("stroke-width", 2);
 
-                    resolve();
-                });
-            }
+                resolve();
+            });
+        }
 
             simulation.on("end", () => {
                 updateBirdView();
