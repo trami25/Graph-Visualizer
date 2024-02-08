@@ -4,8 +4,9 @@ from graph_visualizer_api.model.graph import Graph
 from graph_visualizer_api.model.node import Node
 from graph_visualizer_api.model.edge import Edge
 from html_data_source_plugin.provider import get_links, provide_for_url, get_metadata
-from typing import Optional
+from typing import Optional, Any
 from urllib.parse import urljoin
+import html_data_source_plugin.configuration as configuration_util
 
 
 class HtmlDataSource(DataSource):
@@ -15,17 +16,27 @@ class HtmlDataSource(DataSource):
     to nodes. Each link to a node is parsed to an edge.
 
     Attributes:
-        _base_url: Starting point for the scraper.
-        _node_cap: Maximum number of nodes to be built.
         _next_node_id: Assigned to the next page.
         _graph: Parsed graph.
     """
 
-    def __init__(self, base_url: str = 'http://www.scrapethissite.com', node_cap: int = 20):
-        self._base_url = base_url
-        self._node_cap = node_cap
+    def __init__(self):
         self._next_node_id = 1
         self._graph = Graph([], [])
+        self._configuration = configuration_util.unmarshall_configuration() if configuration_util.configuration_exists() else configuration_util.create_default_configuration()
+
+    @property
+    def configuration(self) -> Optional[dict[str, Any]]:
+        return self._configuration
+
+    @configuration.setter
+    def configuration(self, configuration: dict[str, Any]):
+        configuration_util.marshall_configuration(configuration)
+        self._configuration = configuration_util.unmarshall_configuration()
+
+        # Reset graph and node id on configuration change
+        self._graph = Graph([], [])
+        self._next_node_id = 1
 
     def _build_node(self, soup: BeautifulSoup, url: str) -> Node:
         """Builds the node from the soup object.
@@ -55,7 +66,7 @@ class HtmlDataSource(DataSource):
         :param previous_node: Previous node.
         """
 
-        if self._next_node_id > self._node_cap:
+        if self._next_node_id > int(self._configuration.get('node_cap')):
             return
 
         # Handle existing node
@@ -79,7 +90,7 @@ class HtmlDataSource(DataSource):
         for link in links:
             path = ''
             if link and link.startswith('/'):
-                path = urljoin(self._base_url, link)
+                path = urljoin(self._configuration.get('url'), link)
             elif link and link.startswith('http'):
                 path = link
             else:  # If no format is satisfied
@@ -92,12 +103,6 @@ class HtmlDataSource(DataSource):
 
         :return: Graph object.
         """
-        self._process_node(self._base_url, None)
+        self._process_node(self._configuration.get('url'), None)
 
         return self._graph
-
-
-if __name__ == '__main__':
-    src = HtmlDataSource()
-    graph = src.generate_graph()
-    print(graph.nodes[0])

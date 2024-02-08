@@ -17,6 +17,7 @@ media
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/**/misc.xml
+.idea/Graph-Visualizer.iml
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -136,3 +137,6 @@ GitHub.sublime-settings
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
+
+# Html Data Source plugin specific
+html_data_source_plugin/**/*.toml
