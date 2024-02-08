@@ -64,7 +64,7 @@ class GraphStore:
         try:
             filter = self._parse_prompt(prompt)
             self._filters.append(filter)
-            self._subgraph = self._subgraph.search_and_filer([filter])
+            self._subgraph = self._subgraph.search_and_filter([filter])
         except ValueError:
             raise ValueError("Invalid filter")
 
@@ -76,7 +76,7 @@ class GraphStore:
         try:
             filter = self._parse_prompt(prompt)
             self._filters.remove(filter)
-            self._subgraph = self._root_graph.search_and_filer(self._filters)
+            self._subgraph = self._root_graph.search_and_filter(self._filters)
         except ValueError:
             raise ValueError("Invalid filter")
 
