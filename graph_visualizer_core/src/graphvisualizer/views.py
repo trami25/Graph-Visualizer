@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from simple_visualizer_plugin.simple_visualizer import SimpleVisualizer
+from block_visualizer_plugin.block_visualizer import BlockVisualizer
 from html_data_source_plugin.datasource import HtmlDataSource
 
 
 # Create your views here.
 def index(request):
-    simple_visualizer = SimpleVisualizer()
+    simple_visualizer = BlockVisualizer()
     json_data_source = HtmlDataSource(node_cap=20)
 
     graph = json_data_source.generate_graph()
