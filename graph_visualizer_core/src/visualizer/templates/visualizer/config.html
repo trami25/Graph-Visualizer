@@ -8,15 +8,12 @@
     <h1>Configuration for {{ name }}</h1>
 
     {% if options %}
-        <form>
-            {% for key, value, type in options %}
+        <form action="/config/{{ name }}/update/" method="post">
+        {% csrf_token %}
+            {% for key, value in options %}
                 <label>
                     {{ key }}
-                    {% if type == "<class 'str'>" %}
-                        <input type="text" name={{ key }}>
-                    {% elif type == "<class 'int'>" %}
-                        <input type="number" name={{ key }}>
-                    {% endif %}
+                        <input type="text" value={{ value }} name={{ key }}>
                 </label>
             {% endfor %}
             <button type="submit">Submit</button>

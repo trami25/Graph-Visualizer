@@ -88,10 +88,29 @@ def plugin_config(request, name):
     except PluginException as e:
         raise Http404(e)
 
-    configuration_options = [(config_key, config_val, str(type(config_val))) for config_key, config_val in
+    configuration_options = [(config_key, config_val) for config_key, config_val in
                              plugin.instance.configuration.items()]
 
     return render(request, 'visualizer/config.html', context={
         'name': plugin.name,
         'options': configuration_options
     })
+
+
+def plugin_config_update(request, name):
+    plugin_manager = PluginManager()
+
+    try:
+        plugin = plugin_manager.get_data_source_by_name(name)
+    except PluginException as e:
+        raise Http404(e)
+
+    new_config = {}
+    for key in plugin.instance.configuration.keys():
+        if not request.POST[key]:
+            return HttpResponseBadRequest('No blank fields!')
+        new_config[key] = request.POST[key]
+
+    plugin.instance.configuration = new_config
+
+    return redirect('index')

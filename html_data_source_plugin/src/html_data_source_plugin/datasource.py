@@ -66,7 +66,7 @@ class HtmlDataSource(DataSource):
         :param previous_node: Previous node.
         """
 
-        if self._next_node_id > self._configuration.get('node_cap'):
+        if self._next_node_id > int(self._configuration.get('node_cap')):
             return
 
         # Handle existing node
