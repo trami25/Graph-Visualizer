@@ -12,6 +12,9 @@ authors = [
 ]
 description = "API library for Graph Visualizer"
 requires-python = ">=3.9"
+dependencies = [
+    "yaml",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
