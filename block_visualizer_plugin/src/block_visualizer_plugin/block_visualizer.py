@@ -21,6 +21,6 @@ class BlockVisualizer(Visualizer):
         edges_json = json.dumps([{'source': edge.source.node_id, 'target': edge.target.node_id, 'data': edge.data}
                                  for edge in graph.edges])
 
-        html_template = template.render(nodes_json=nodes_json, edges_json=edges_json)
+        html_template = template.render(nodes_json=nodes_json, edges_json=edges_json, directed = graph.directed)
 
         return html_template
