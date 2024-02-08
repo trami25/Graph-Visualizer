@@ -1,9 +1,15 @@
 from __future__ import annotations
-from importlib.metadata import entry_points
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from typing import TypeVar, Type, Generic
 from graph_visualizer_platform.exceptions import PluginException
+from graph_visualizer_platform.singleton import SingletonMeta
+
+import sys
+if sys.version_info < (3, 10):
+    from importlib_metadata import entry_points
+else:
+    from importlib.metadata import entry_points
 
 T = TypeVar('T')
 
@@ -14,14 +20,14 @@ class Plugin(Generic[T]):
     Attributes:
         _name: Name of the plugin.
         _plugin_type: The plugin class.
-        _instance: The instance of the plugin. Is None when the plugin created and is only instantiated when a getter is
+        _instance: The instance of the plugin.
         called.
     """
 
-    def __init__(self, name: str, plugin_type: Type[T]):
+    def __init__(self, name: str, plugin_type: Type[T], instance: T = None):
         self._name = name
         self._plugin_type = plugin_type
-        self._instance: T = None
+        self._instance = instance
 
     @property
     def name(self) -> str:
@@ -51,7 +57,7 @@ def load_for_group(group: str) -> list[Plugin]:
     return plugins
 
 
-class PluginManager:
+class PluginManager(metaclass=SingletonMeta):
     """Manages the plugins from the environment
 
     This class upon creation loads the plugins from the python environment and stores them in lists.

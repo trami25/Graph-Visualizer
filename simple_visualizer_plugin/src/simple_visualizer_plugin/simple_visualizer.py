@@ -1,3 +1,4 @@
+import json
 import os
 
 from jinja2 import Environment, FileSystemLoader
@@ -27,6 +28,10 @@ class SimpleVisualizer(Visualizer):
         env = Environment(loader=FileSystemLoader(template_path))
         template = env.get_template("simple_visualizer_plugin/simple_visualizer_template.jinja2")
 
-        html = template.render(graph=graph)
+        nodes_json = json.dumps([{'node_id': node.node_id, 'data': node.data} for node in graph.nodes])
+        edges_json = json.dumps([{'source': edge.source.node_id, 'target': edge.target.node_id, 'data': edge.data}
+                                 for edge in graph.edges])
+
+        html = template.render(nodes_json=nodes_json, edges_json=edges_json)
 
         return html
