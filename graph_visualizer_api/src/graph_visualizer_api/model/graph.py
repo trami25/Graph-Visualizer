@@ -4,6 +4,7 @@ from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
 from typing import Optional, Any
+import random
 
 
 class Graph:
@@ -185,3 +186,13 @@ class Graph:
         nodes = ''.join([f'{node}\n' for node in self._nodes])
         edges = ''.join([f'{edge}\n' for edge in self._edges])
         return nodes + edges
+
+
+    def get_random_node(self) -> Optional[Node]:
+        """Get a random node from the graph.
+
+        :returns: Random node from the graph, or None if the graph is empty.
+        """
+        if not self.nodes:
+            return None
+        return random.choice(self.nodes)

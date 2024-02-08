@@ -3,7 +3,7 @@ import re
 import os
 
 def provide_json_data(filepath: str) -> dict:
-    create_json_data(filepath)
+    # create_json_data(filepath)
     with open(filepath, 'r') as file:
             json_data = json.load(file)
     return json_data
