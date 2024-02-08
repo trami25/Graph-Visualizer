@@ -141,11 +141,13 @@ class TestGraph(unittest.TestCase):
         filter3 = Filter('age', '<', '22')
         filter4 = Filter('search', 'contains', 'ra')
         filters = [filter, filter2]
+
         node1 = Node(1, {'name': 'Pera', 'lastName': 'Peria', 'age': 19, "date": date.today()+timedelta(1)})
         node2 = Node(2, {'name': 'Djura', 'lastName': 'Perib', 'age': 20, "date": date.today()+timedelta(2)})
         node3 = Node(3, {'name': 'Pera', 'lastName': 'Peric', 'age': 21, "date": date.today()-timedelta(2)})
         node4 = Node(4, {'name': 'Pera', 'lastName': 'Perid', 'age': 22, "date": date.today()-timedelta(2)})
         node5 = Node(5, {'name': 'Mika', 'lastName': 'Perie', 'age': 23, "date": date.today()+timedelta(1)})
+
         edge1 = Edge(node1, node2, {})
         edge2 = Edge(node2, node3, {})
         edge3 = Edge(node3, node4, {})
