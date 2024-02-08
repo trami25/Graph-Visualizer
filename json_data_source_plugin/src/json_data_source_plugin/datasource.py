@@ -1,4 +1,7 @@
+import os.path
+
 from graph_visualizer_api.datasource import DataSource
+from graph_visualizer_api.model.exceptions import GraphError
 from graph_visualizer_api.model.graph import Graph
 from graph_visualizer_api.model.node import Node
 from graph_visualizer_api.model.edge import Edge
@@ -19,7 +22,7 @@ class JsonDataSource(DataSource):
     """
 
     def __init__(self, node_cap: int = 2000):
-        self._json_data = provide_json_data('json_data_source_plugin\\data.json')
+        self._json_data = provide_json_data(os.path.join(os.path.dirname(__file__), "..", "..", "data.json"))
         self._next_node_id = 1
         self._node_cap = node_cap
         self._graph = Graph([], [])
@@ -63,6 +66,9 @@ class JsonDataSource(DataSource):
         :return: Graph object.
         """
         print("Parsing JSON data and building graph...")
-        self._process_node(self._json_data["nodes"], self._json_data["edges"])
+        try:
+            self._process_node(self._json_data["nodes"], self._json_data["edges"])
+        except GraphError:
+            print('Returning existing graph...')
 
         return self._graph
