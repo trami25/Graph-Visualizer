@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tree View</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+ <style>
         .node rect {
             fill: #fff;
             stroke: steelblue;
@@ -58,17 +52,6 @@
         }
         
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="container2">
-            <svg id="tree-svg">
-                <g transform="translate(50,-300)">
-                </g>
-            </svg>
-        </div>
-    </div>
-
     <script>
 
         var json_data = '{{ json_data|escapejs}}';
@@ -211,10 +194,6 @@
                     d3.select('#nodeName').text('Node name: ' + node.data.data.name);
                 });
         }
-
-
         DFS(rootNode, createNode);
-
     </script>
-</body>
-</html>
+
