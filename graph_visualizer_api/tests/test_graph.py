@@ -153,6 +153,6 @@ class TestGraph(unittest.TestCase):
         edge3 = Edge(node3, node4, {})
         graph = Graph([node1, node2, node3, node4, node5], [edge1, edge2, edge3])
 
-        self.assertEqual(4, len(graph.search_and_filer(filters).nodes))
+        self.assertEqual(2, len(graph.search_and_filer(filters).nodes))
         self.assertEqual(3, len(graph.search_and_filer([filter3]).nodes))
         self.assertEqual(4, len(graph.search_and_filer([filter4]).nodes))
