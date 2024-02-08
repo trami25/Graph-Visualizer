@@ -55,6 +55,16 @@
             stroke: #808080;
             stroke-width: 0.5;
         }
+        .node.focused rect {
+        fill: #ff0000;
+        stroke: #000;
+        stroke-width: 2;
+    }
+
+    .node-bird.focused  {
+        fill: #ff0000;
+        stroke: #fff;
+    }
 	 #graph-container {
             border: 2px solid #000;
             overflow: hidden;
@@ -245,7 +255,24 @@
                     };
                 }
 
+            nodeElements.on("click", clickNode);
+            birdViewNodes.on("click", clickNode);
+           function clickNode(event, d) {
+                // Remove focus from all nodes
+                nodeElements.classed("focused", false);
+                birdViewNodes.classed("focused", false);
 
+                // Add focus to the clicked node
+                d3.select(this).classed("focused", true);
+
+                // Find the corresponding node in the opposite view by ID
+                const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
+                    .filter(node => node.node_id === d.node_id);
+
+                // Add focus to the corresponding node in the opposite view
+                correspondingNode.classed("focused", true);
+
+            }
 
         function updateFrame() {
             return new Promise(resolve => {
