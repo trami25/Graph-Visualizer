@@ -17,7 +17,6 @@ media
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/**/misc.xml
-.idea/Graph-Visualizer.iml
 
 # AWS User-specific
 .idea/**/aws.xml
