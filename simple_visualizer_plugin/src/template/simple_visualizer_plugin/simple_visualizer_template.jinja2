@@ -151,7 +151,7 @@
             let frameX = 0;
             let frameY = 0;
 
-            const birdView = d3.select("#graph-container").append("svg")
+            const birdView = d3.select("#graph-outline").append("svg")
                 .attr("width", birdViewWidth)
                 .attr("height", birdViewHeight)
                 .style("position", "absolute")
@@ -172,31 +172,31 @@
                 .attr("class", "link-bird");
 
             function updateBirdView() {
-                const scale = birdViewWidth / width;
+                    const scale = birdViewWidth / width;
 
-                birdViewNodes
-                    .attr("cx", d => d.x * scale)
-                    .attr("cy", d => d.y * scale);
+                    birdViewNodes
+                        .attr("cx", d => Math.max(0, Math.min(birdViewWidth, d.x * scale)))
+                        .attr("cy", d => Math.max(0, Math.min(birdViewHeight, d.y * scale)));
 
-                birdViewEdges
-                    .attr("x1", d => d.source.x * scale)
-                    .attr("y1", d => d.source.y * scale)
-                    .attr("x2", d => d.target.x * scale)
-                    .attr("y2", d => d.target.y * scale);
+                    birdViewEdges
+                        .attr("x1", d => Math.max(0, Math.min(birdViewWidth, d.source.x * scale)))
+                        .attr("y1", d => Math.max(0, Math.min(birdViewHeight, d.source.y * scale)))
+                        .attr("x2", d => Math.max(0, Math.min(birdViewWidth, d.target.x * scale)))
+                        .attr("y2", d => Math.max(0, Math.min(birdViewHeight, d.target.y * scale)));
 
-                const transform = d3.zoomTransform(svg.node());
-                const mainViewX = -transform.x / transform.k;
-                const mainViewY = -transform.y / transform.k;
-                const mainViewWidth = width / transform.k;
-                const mainViewHeight = height / transform.k;
+                    const transform = d3.zoomTransform(svg.node());
+                    const mainViewX = -transform.x / transform.k;
+                    const mainViewY = -transform.y / transform.k;
+                    const mainViewWidth = width / transform.k;
+                    const mainViewHeight = height / transform.k;
 
-                frameX = mainViewX;
-                frameY = mainViewY;
-                frameWidth = mainViewWidth;
-                frameHeight = mainViewHeight;
+                    frameX = mainViewX;
+                    frameY = mainViewY;
+                    frameWidth = mainViewWidth;
+                    frameHeight = mainViewHeight;
 
-                updateFrame();
-            }
+                    updateFrame();
+                }
 
 
 
