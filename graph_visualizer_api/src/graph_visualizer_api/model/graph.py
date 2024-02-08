@@ -14,15 +14,17 @@ class Graph:
     Attributes:
         nodes: List of nodes.
         edges: List of edges.
+        directed: Boolean indicating if the graph is directed.
     """
 
-    def __init__(self, nodes: list[Node], edges: list[Edge]):
+    def __init__(self, nodes: list[Node], edges: list[Edge], directed: bool = False):
         for edge in edges:
             if edge.source not in nodes or edge.target not in nodes:
                 raise GraphError("non existent node in edge")
 
         self._nodes = nodes
         self._edges = edges
+        self._directed = directed
 
     @property
     def nodes(self) -> list[Node]:
@@ -31,6 +33,10 @@ class Graph:
     @property
     def edges(self) -> list[Edge]:
         return self._edges
+
+    @property
+    def directed(self) -> bool:
+        return self._directed
 
     def add_node(self, node: Node) -> None:
         """Add a node to the graph.
@@ -115,7 +121,7 @@ class Graph:
 
         return [node for node in self._nodes if kwargs.items() <= node.data.items()]
 
-    def search_and_filer(self, filters: list[Filter]) -> Graph:
+    def search_and_filter(self, filters: list[Filter]) -> Graph:
         """Returns a list of nodes that satisfy the given filters.
 
         :param filters: List of filters to apply.
@@ -159,7 +165,7 @@ class Graph:
             if satisfies_all_filters:
                 nodes.append(node)
 
-        return Graph(nodes, self.add_edges(nodes))
+        return Graph(nodes, self.add_edges(nodes), self._directed)
 
     def add_edges(self, nodes: list[Node]) -> list[Edge]:
         """Add edges between nodes in the graph.
