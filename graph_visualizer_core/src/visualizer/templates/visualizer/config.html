@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph Visualizer Config</title>
+</head>
+<body>
+    <h1>Configuration for {{ name }}</h1>
+
+    {% if options %}
+        <form>
+            {% for key, value, type in options %}
+                <label>
+                    {{ key }}
+                    {% if type == "<class 'str'>" %}
+                        <input type="text" name={{ key }}>
+                    {% elif type == "<class 'int'>" %}
+                        <input type="number" name={{ key }}>
+                    {% endif %}
+                </label>
+            {% endfor %}
+            <button type="submit">Submit</button>
+        </form>
+    {% else %}
+        <p>No configuration for this plugin.</p>
+    {% endif %}
+</body>
+</html>

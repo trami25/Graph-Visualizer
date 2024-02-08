@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponseBadRequest
 
 from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
-from graph_visualizer_platform.exceptions import WorkspaceException
+from graph_visualizer_platform.exceptions import WorkspaceException, PluginException
 
 
 # Create your views here.
@@ -78,3 +78,20 @@ def workspace_plugins(request, tag):
         workspace.active_visualizer = plugin_manager.get_visualizer_by_name(request.POST['visualizer'])
 
     return redirect('index')
+
+
+def plugin_config(request, name):
+    plugin_manager = PluginManager()
+
+    try:
+        plugin = plugin_manager.get_data_source_by_name(name)
+    except PluginException as e:
+        raise Http404(e)
+
+    configuration_options = [(config_key, config_val, str(type(config_val))) for config_key, config_val in
+                             plugin.instance.configuration.items()]
+
+    return render(request, 'visualizer/config.html', context={
+        'name': plugin.name,
+        'options': configuration_options
+    })
