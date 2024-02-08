@@ -124,8 +124,10 @@ class Graph:
         """
 
         nodes = []
+        if len(filters) == 0:
+            return self
         for node in self._nodes:
-            satisfies_all_filters = True
+            satisfies_all_filters = False
             for filter in filters:
                 if filter.attribute_name in node.data.keys() or filter.attribute_name == 'search':
                     if filter.comparator == '=':
