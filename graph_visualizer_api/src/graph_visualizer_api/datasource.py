@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Any
 
 from graph_visualizer_api.model.graph import Graph
 
@@ -24,10 +24,10 @@ class DataSource(ABC):
 
     @property
     @abstractmethod
-    def configuration(self) -> Optional[dict[str, int | str | bool]]:
+    def configuration(self) -> Optional[dict[str, Any]]:
         pass
 
     @configuration.setter
     @abstractmethod
-    def configuration(self, configuration: dict[str, int | str | bool]) -> None:
+    def configuration(self, configuration: dict[str, Any]) -> None:
         pass
