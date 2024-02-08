@@ -29,3 +29,7 @@ def unmarshall_configuration() -> dict[str, Any]:
         config = toml.load(f)
 
     return config
+
+
+def configuration_exists() -> bool:
+    return os.path.exists(os.path.join(__location__, 'config.toml'))
