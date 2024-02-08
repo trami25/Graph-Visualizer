@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.apps.registry import apps
 from django.http import Http404, HttpResponseBadRequest
-
+from django.utils.safestring import mark_safe
 from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
 from graph_visualizer_platform.exceptions import WorkspaceException, PluginException
@@ -25,13 +25,14 @@ def workspace_view(request, tag):
     active_workspace = workspace_manager.get_by_tag(tag)
     if active_workspace is None:
         raise Http404('Workspace does not exist.')
-
+    my_template = active_workspace.template
     return render(request, 'visualizer/workspace.html',
                   context={
                       'data_source_plugins': data_source_plugins,
                       'visualizer_plugins': visualizer_plugins,
                       'workspaces': workspaces,
-                      'active_workspace': active_workspace
+                      'active_workspace': active_workspace,
+                      'template': mark_safe(my_template)
                   })
 
 

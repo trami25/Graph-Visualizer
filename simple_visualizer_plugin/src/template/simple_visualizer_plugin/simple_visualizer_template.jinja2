@@ -1,83 +1,6 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Visualizer</title>
+
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        .node circle {
-            fill: #ddd;
-            stroke: #000;
-            stroke-width: 1;
-        }
 
-        .node text {
-            text-anchor: middle;
-            alignment-baseline: central;
-        }
-
-        .edge text {
-            display: none;
-        }
-
-        .link {
-            fill: none;
-            stroke: #000;
-            stroke-width: 2;
-        }
-
-        .arrow {
-            fill: rgb(128, 128, 128);
-        }
-
-        .node-bird rect {
-            fill:darkgray;
-            stroke: #fff;
-
-        }
-
-        .link-bird {
-            fill: none;
-            stroke: #828282;
-            stroke-width: 0.5;
-        }
-        .node.focused circle {
-        fill: #ff0000;
-        stroke: #000;
-        stroke-width: 2;
-    }
-
-    .node-bird.focused {
-        fill: #ff0000;
-        stroke: #fff;
-    }
-
-        #graph-container {
-            border: 2px solid #000;
-            overflow: hidden;
-            position: relative;
-        }
-
-        #graph-outline {
-            position: absolute;
-            border: 2px solid #000;
-            pointer-events: none;
-        }
-
-        #details {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: white;
-            padding: 5px;
-            border: 1px solid #000;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div id="graph-container">
-        <div id="graph-outline"></div>
-        <div id="details"></div>
         <script>
             let nodes = JSON.parse('{{ nodes_json|safe }}');
             let edges = JSON.parse('{{ edges_json|safe }}');
@@ -362,5 +285,3 @@
             }
 
         </script>
-    </div>
-</body>
