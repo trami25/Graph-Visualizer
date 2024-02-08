@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from graph_visualizer_platform import tree_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('d3_visualization/', tree_view.d3_visualization, name='d3_visualization'),
 ]
