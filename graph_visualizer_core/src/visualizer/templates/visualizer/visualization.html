@@ -120,6 +120,19 @@
 
             var svg = d3.select('svg');
 
+            
+            let title = node.data.data.name ? ["Name: " , node.data.data.name] : ["Title:", node.data.data.title];
+            let new_line = ""
+            if(title[1].length * 12 >= 132){
+                var charsToFit = Math.floor(132 / 12);
+
+                var firstPart = title[1].substring(0, charsToFit);
+                var secondPart = title[1].substring(charsToFit , 2 * charsToFit);
+
+                title[1] = firstPart;
+                new_line = secondPart
+            }
+
             svg.append('rect')
                 .attr('class', 'node-rect')
                 .attr('id', "node-rect" + node.data.id)
@@ -130,8 +143,10 @@
                 .on('click', function () {
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+                    d3.select('#nodeName').text(title);
                 });
+
+
 
             svg.append('text')
                 .attr('class', 'node-text')
@@ -143,12 +158,12 @@
                 .on('click', function () {
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+                    d3.select('#nodeName').text(title[1]);
 
                 
                 })
                 .selectAll('tspan')
-                .data(["ID: " + nodeId, "Name: ", node.data.data.name])
+                .data(["ID: " + nodeId, title[0], title[1], new_line])
                 .enter().append('tspan')
                 .attr('x', function(d, i) {
                     if (i === 0 || i === 1) {
@@ -159,7 +174,7 @@
                 })
                 .attr('dy', function(d, i) { if(i === 0) return 0 + 'em';
                 return 1.5 + "em"; })
-                .text(function(d) { return d; });;
+                .text(function(d) { return d; });
 
             var nodeElement = d3.select('svg g').append('g')
                 .attr('class', 'node')
@@ -182,7 +197,7 @@
                     }
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+                    d3.select('#nodeName').text(title[1]);
                 });
 
             nodeElement.append('text')
@@ -197,7 +212,7 @@
                         .style('position', 'fixed');
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+                    d3.select('#nodeName').text(title[1]);
                 });
         }
         DFS(rootNode, createNode);

@@ -3,6 +3,8 @@ from django.apps.registry import apps
 from django.http import Http404, HttpResponseBadRequest
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.safestring import mark_safe
+
+from graph_visualizer_platform import tree_view
 from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
 from graph_visualizer_platform.exceptions import WorkspaceException, PluginException
@@ -26,14 +28,18 @@ def workspace_view(request, tag):
     data_source_plugins = apps.get_app_config('visualizer').data_source_plugins
     visualizer_plugins = apps.get_app_config('visualizer').visualizer_plugins
     workspaces = apps.get_app_config('visualizer').workspaces
-
+    node_id = request.GET.get('node_id', None)
     workspace_manager = WorkspaceManager()
     active_workspace = workspace_manager.get_by_tag(tag)
     if active_workspace is None:
         raise Http404('Workspace does not exist.')
+    if node_id is not None:
+        node_id1 = int(node_id)
+        active_workspace.tree_template = tree_view.generate_template(active_workspace.graph_store.root_graph, node_id1)
+        print("Node ID: ", node_id)
+    print("Node ID: ", node_id)
     my_template = active_workspace.template
-
-    my_tree = active_workspace._tree_template
+    my_tree = active_workspace.tree_template
     return render(request, 'visualizer/workspace.html',
                   context={
                       'data_source_plugins': data_source_plugins,
@@ -41,9 +47,8 @@ def workspace_view(request, tag):
                       'workspaces': workspaces,
                       'active_workspace': active_workspace,
                       'template': mark_safe(my_template),
-                      'tree_template':mark_safe(my_tree)
+                      'tree_template': mark_safe(my_tree)
                   })
-
 
 def new_workspace(request):
     workspace_manager = WorkspaceManager()

@@ -27,7 +27,7 @@
                 .attr("class", "link")
                 .attr("marker-end", "url(#arrow)")
                 .on("mouseover", showDetails)
-                .on("mouseout", hideDetails);
+                .on("mouseout", hideDetails)
 
             const nodeElements = svg.selectAll(".node")
                 .data(nodes)
@@ -38,7 +38,8 @@
                     .on("drag", dragged)
                     .on("end", dragended))
                 .on("mouseover", showDetails)
-                .on("mouseout", hideDetails);
+                .on("mouseout", hideDetails)
+
 
             nodeElements.append("circle")
                 .attr("r", 20);
@@ -96,7 +97,7 @@
             let frameX = 0;
             let frameY = 0;
 
-            const birdView = d3.select("#graph-outline").append("svg")
+            const birdView = d3.select("#graph-container").append("svg")
                 .attr("width", birdViewWidth)
                 .attr("height", birdViewHeight)
                 .style("position", "absolute")
@@ -171,20 +172,28 @@
             nodeElements.on("click", clickNode);
             birdViewNodes.on("click", clickNode);
            function clickNode(event, d) {
-                // Remove focus from all nodes
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('node_id', d.node_id);
+                window.history.replaceState({}, document.title, currentUrl);
+                console.log("New URL:", currentUrl.href);
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const nodeIdParam = urlParams.get('node_id');
+                console.log(nodeIdParam);
+
+                if (nodeIdParam) {
+                    document.getElementById('nodeIdInput').value = nodeIdParam;
+                }
+
                 nodeElements.classed("focused", false);
                 birdViewNodes.classed("focused", false);
 
-                // Add focus to the clicked node
                 d3.select(this).classed("focused", true);
 
-                // Find the corresponding node in the opposite view by ID
                 const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
                     .filter(node => node.node_id === d.node_id);
 
-                // Add focus to the corresponding node in the opposite view
                 correspondingNode.classed("focused", true);
-
             }
 
 
@@ -282,5 +291,4 @@
             function hideDetails() {
                 d3.select("#details").style("display", "none");
             }
-
         </script>

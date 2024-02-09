@@ -13,11 +13,12 @@ from django.shortcuts import render
 
 def get_tree(graph: Graph, node_id:int = None):
 
-    if(node_id):
-        node_id = 150
-    tree = Tree(None).from_graph(graph, node_id)
+    if(not node_id):
+        node_id = graph.get_random_node().node_id
 
-    if(tree):
+    tree = Tree(node_id).from_graph(graph, node_id)
+
+    if (tree):
         yaml_data = tree.to_json()
 
     with open(os.path.join("graph_visualizer_platform", "src", "graph_visualizer_platform", "tree_view_data.json"), 'r') as file:

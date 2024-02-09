@@ -50,6 +50,7 @@ class Workspace(PluginListener):
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
         self._tree_template = tree_view.generate_template(graph)
+        
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
@@ -88,6 +89,18 @@ class Workspace(PluginListener):
         graph = self.active_data_source.instance.generate_graph()
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
+
+    @property
+    def tree_template(self):
+        return self._tree_template
+
+    @tree_template.setter
+    def tree_template(self, value):
+        self._tree_template = value
+
+    @property
+    def graph_store(self):
+        return self._graph_store
 
 
 class WorkspaceManager(metaclass=SingletonMeta):
