@@ -43,6 +43,52 @@
     </label>
     <button type="submit">OK!</button>
 </form>
+    <form action="/workspace/{{ active_workspace.tag }}/add_filter/" method="post">
+        {% csrf_token %}
+    <label>
+        Filter:
+        <input type="text" name="attribute_name">
+        <select name="comparator">
+            <option value="=">=</option>
+            <option value="!=">!=</option>
+            <option value=">">></option>
+            <option value="<"><</option>
+            <option value=">=">>=</option>
+            <option value="<="><=</option>
+        </select>
+        <input type="text" name="attribute_value">
+        <button type="submit">Apply</button>
+    </label>
+    </form>
+    <form action="/workspace/{{ active_workspace.tag }}/search/" method="post">
+        {% csrf_token %}
+        <label>Search:
+            <input type="text" name="search">
+            <button type="submit">Search</button>
+        </label>
+    </form>
+    <form action="/workspace/{{ active_workspace.tag }}/remove_filter/" method="post">
+        {% csrf_token %}
+    <label>
+        Remove filter:
+        <select name="filters">
+            {% for filter in active_workspace.graph_store.filters %}
+                <option value="{{ filter.attribute_name }}|{{ filter.comparator }}|{{ filter.attribute_value }}">{{ filter }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Remove</button>
+    </label>
+    </form>
+    {% if active_workspace.graph_store.filters %}
+    <div id="filters">
+    <h4>Applied filters:</h4>
+    <ul class="filter-list">
+        {% for filter in active_workspace.graph_store.filters %}
+            <li class="filter-item">{{ filter }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+    {% endif %}
      <div id="graph-container" style="width: 100%; height: 600px">
 
         <div class="container">

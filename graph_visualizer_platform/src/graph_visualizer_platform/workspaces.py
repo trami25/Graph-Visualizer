@@ -28,7 +28,7 @@ class Workspace(PluginListener):
         self._active_data_source = active_data_source
         self._graph_store.root_graph = active_data_source.instance.generate_graph()
         self._active_visualizer = active_visualizer
-        self._template = active_visualizer.instance.generate_template(self._graph_store.root_graph)
+        self._template = active_visualizer.instance.generate_template(self._graph_store.subgraph)
         self._tree_template = tree_view.generate_template(self._graph_store.root_graph)
 
     @property
@@ -66,6 +66,25 @@ class Workspace(PluginListener):
     def template(self) -> str:
         return self._template
 
+    @property
+    def graph_store(self) -> GraphStore:
+        return self._graph_store
+
+    def add_filter(self, prompt: str) -> None:
+        """Adds a filter to the graph store.
+
+        :param prompt: String to parse into a filter.
+        """
+        self._graph_store.add_filter(prompt)
+        self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
+
+    def remove_filter(self, prompt: str) -> None:
+        """Removes a filter from the graph store.
+
+        :param prompt: String to parse into a filter.
+        """
+        self._graph_store.remove_filter(prompt)
+        self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
     def regenerate_graph(self):
         graph = self.active_data_source.instance.generate_graph()
         self._graph_store.root_graph = graph
