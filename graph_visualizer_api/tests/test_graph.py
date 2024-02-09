@@ -136,10 +136,10 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(0, len(graph.get_nodes_by_attributes(name='Mika')))
 
     def test_filter_and_search(self):
-        filter = Filter('search', 'contains', 'ra')
+        filter = Filter('search', ':', 'ra')
         filter2 = Filter('date', '>=', str(date.today()))
         filter3 = Filter('age', '<', '22')
-        filter4 = Filter('search', 'contains', 'ra')
+        filter4 = Filter('search', ':', 'ra')
         filters = [filter, filter2]
 
         node1 = Node(1, {'name': 'Pera', 'lastName': 'Peria', 'age': 19, "date": date.today()+timedelta(1)})

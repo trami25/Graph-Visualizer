@@ -29,6 +29,9 @@ class GraphStore:
     @property
     def subgraph(self) -> Optional[Graph]:
         return self._subgraph
+    @property
+    def filters(self) -> list[Filter]:
+        return self._filters
 
     def add_filter(self, prompt: str) -> None:
         """
@@ -64,7 +67,7 @@ class GraphStore:
         :param prompt: string to parse into a filter.
         :return: filter
         """
-        filter_tokens = prompt.split()
-        if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', 'contains']:
+        filter_tokens = prompt.split("|")
+        if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', ':']:
             raise ValueError("Invalid filter")
         return Filter(filter_tokens[0], filter_tokens[1], filter_tokens[2])

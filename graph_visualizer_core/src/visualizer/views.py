@@ -32,6 +32,7 @@ def workspace_view(request, tag):
     if active_workspace is None:
         raise Http404('Workspace does not exist.')
     my_template = active_workspace.template
+
     my_tree = active_workspace._tree_template
     return render(request, 'visualizer/workspace.html',
                   context={
@@ -129,3 +130,60 @@ def plugin_config_update(request, name):
     plugin.update_configuration(new_config)
 
     return redirect('index')
+
+
+def add_filter(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    attribute_name = request.POST['attribute_name']
+    comparator = request.POST['comparator']
+    attribute_value = request.POST['attribute_value']
+    filter_name = attribute_name + "|" + comparator + "|" + attribute_value
+
+    try:
+        workspace.add_filter(filter_name)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
+
+    print(len(workspace.graph_store.subgraph.nodes))
+    print(len(workspace.graph_store.filters))
+
+    return redirect('workspace', tag=tag)
+
+
+def remove_filter(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    if 'filters' in request.POST:
+        filter_name = request.POST['filters']
+        try:
+            workspace.remove_filter(filter_name)
+        except ValueError:
+            return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
+    else:
+        return HttpResponseBadRequest("No filter selected.")
+
+    print(len(workspace.graph_store.subgraph.nodes))
+    print(len(workspace.graph_store.filters))
+
+    return redirect('workspace', tag=tag)
+
+
+def search(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    search_term = request.POST['search']
+    try:
+        filter_value = "search|:|" + search_term
+        print(filter_value)
+        workspace.add_filter(filter_value)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid search term.")
+
+    return redirect('workspace', tag=tag)
