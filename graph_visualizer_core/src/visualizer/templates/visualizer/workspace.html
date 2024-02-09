@@ -48,6 +48,13 @@
         <button type="submit">Apply</button>
     </label>
     </form>
+    <form action="/workspace/{{ active_workspace.tag }}/search/" method="post">
+        {% csrf_token %}
+        <label>Search:
+            <input type="text" name="search">
+            <button type="submit">Search</button>
+        </label>
+    </form>
     <form action="/workspace/{{ active_workspace.tag }}/remove_filter/" method="post">
         {% csrf_token %}
     <label>

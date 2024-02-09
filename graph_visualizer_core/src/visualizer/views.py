@@ -171,3 +171,19 @@ def remove_filter(request, tag):
     print(len(workspace.graph_store.filters))
 
     return redirect('workspace', tag=tag)
+
+
+def search(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    search_term = request.POST['search']
+    try:
+        filter_value = "search|:|" + search_term
+        print(filter_value)
+        workspace.graph_store.add_filter(filter_value)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid search term.")
+
+    return redirect('workspace', tag=tag)
