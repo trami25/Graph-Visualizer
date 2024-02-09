@@ -98,29 +98,9 @@ classDiagram
         + addFilter(input: String)
         + removeFilter(filter: Filter)
     }
-    class MainView {
-        + update(graph: Graph)
-    }
-    class BirdView {
-        + update(graph: Graph)
-    }
-    class TreeView {
-        + update(graph: Graph)
-    }
-    class GraphListener {
-        <<interface>>
-        + update(graph: Graph)
-    }
     
     PluginManager "1" -->  "*" Plugin : - dataSources
     PluginManager "1" -->  "*" Plugin : - visualizers
     WorkspaceManager "1" --> "*" Workspace : - workspaces
     Workspace --> GraphStore : - graphStore
-    Workspace --> MainView
-    Workspace --> BirdView
-    Workspace --> TreeView
-    MainView --|> GraphListener
-    BirdView --|> GraphListener
-    TreeView --|> GraphListener
-    GraphStore "1" --> "*" GraphListener :  - listeners
 ```
