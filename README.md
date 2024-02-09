@@ -24,11 +24,12 @@ classDiagram
     class Tree
     class VisualizerPlugin {
         <<interface>>
-        + generate_template(graph: Graph) String
+        + generateTemplate(graph: Graph) String
     }
     class DataSourcePlugin {
         <<interface>>
-        + generate_graph() Graph
+        - configuration: Dictionary
+        + generateGraph() Graph
     }
 
     class Platform
@@ -47,7 +48,9 @@ classDiagram
 title: Graph and Tree
 ---
 classDiagram
-    class Graph
+    class Graph {
+        - directed: Boolean
+    }
     class Node {
         - nodeId: int
         - data: Dictionary
@@ -72,7 +75,6 @@ classDiagram
 title: Platform
 ---
 classDiagram
-    class Facade
     class PluginManager {
         + getDataSourceByName(name: String) Plugin~DataSourcePlugin~
         + getVisualizerByName(name: String) Plugin~Visualizer~
@@ -81,46 +83,37 @@ classDiagram
         - name: String
         - pluginType: Class~T~
         - instance: T
+        + addListener(listener: PluginListener)
+        + removeListener(listener: PluginListener)
+        + updateConfiguration(config: Dictionary)
     }
     class WorkspaceManager {
-        + spawn() void
-        + kill(tag: String) void
+        + spawn(tag: String, dataSource: DataSourcePlugin, visualizer: VisualizerPlugin)
+        + kill(tag: String)
     }
     class Workspace {
         - tag: String
-        - activeDataSource: DataSourcePlugin
-        - activeVisualizer: VisualizerPlugin
+        - template: String
+        + onConfigChanged()
     }
     class GraphStore {
         - graph: Graph
         - subgraph: Graph
         - filters: Filter[]
-        + addFilter(input: String)
-        + removeFilter(filter: Filter)
+        + addFilter(prompt: String)
+        + removeFilter(prompt: String)
+        - parsePrompt(prompt: String)
     }
-    class MainView {
-        + update(graph: Graph)
-    }
-    class BirdView {
-        + update(graph: Graph)
-    }
-    class TreeView {
-        + update(graph: Graph)
-    }
-    class GraphListener {
-        <<interface>>
-        + update(graph: Graph)
+    class PluginListener {
+        + onConfigChanged()
     }
     
     PluginManager "1" -->  "*" Plugin : - dataSources
     PluginManager "1" -->  "*" Plugin : - visualizers
     WorkspaceManager "1" --> "*" Workspace : - workspaces
     Workspace --> GraphStore : - graphStore
-    Workspace --> MainView
-    Workspace --> BirdView
-    Workspace --> TreeView
-    MainView --|> GraphListener
-    BirdView --|> GraphListener
-    TreeView --|> GraphListener
-    GraphStore "1" --> "*" GraphListener :  - listeners
+    Workspace --> Plugin : - activeDataSource
+    Workspace --> Plugin : - activeVisualizer
+    Workspace ..|> PluginListener
+    Plugin "*" --> "*" PluginListener : - listeners
 ```
