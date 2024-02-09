@@ -29,6 +29,9 @@ class GraphStore:
     @property
     def subgraph(self) -> Optional[Graph]:
         return self._subgraph
+    @property
+    def filters(self) -> list[Filter]:
+        return self._filters
 
     def add_filter(self, prompt: str) -> None:
         """
