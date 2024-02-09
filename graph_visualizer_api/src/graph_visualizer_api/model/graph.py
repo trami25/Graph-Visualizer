@@ -4,7 +4,6 @@ from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
 from typing import Optional, Any
-from graph_visualizer_platform.filter_strategies import *
 import random
 
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from graph_visualizer_platform.filter_strategies import FilterStrategy
+from graph_visualizer_api.model.filter_strategies import FilterStrategy
 
 class Filter:
     """Model of a filter for a graph.

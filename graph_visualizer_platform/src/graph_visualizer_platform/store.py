@@ -1,6 +1,6 @@
 from graph_visualizer_api.model.filter import Filter
 from graph_visualizer_api.model.graph import Graph
-from graph_visualizer_platform.filter_strategies import *
+from graph_visualizer_api.model.filter_strategies import *
 from typing import Optional
 
 
