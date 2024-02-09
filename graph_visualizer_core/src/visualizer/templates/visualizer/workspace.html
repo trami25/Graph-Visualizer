@@ -61,7 +61,7 @@
         Remove filter:
         <select name="filters">
             {% for filter in active_workspace.graph_store.filters %}
-                <option value="{{ filter }}">{{ filter }}</option>
+                <option value="{{ filter.attribute_name }}|{{ filter.comparator }}|{{ filter.attribute_value }}">{{ filter }}</option>
             {% endfor %}
         </select>
         <button type="submit">Remove</button>

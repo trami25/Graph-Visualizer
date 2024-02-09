@@ -92,8 +92,8 @@ class GraphStore:
         :param prompt: string to parse into a filter.
         :return: filter
         """
-        filter_tokens = prompt.split()
-        if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', 'contains']:
+        filter_tokens = prompt.split("|")
+        if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', ':']:
             raise ValueError("Invalid filter")
         return Filter(filter_tokens[0], filter_tokens[1], filter_tokens[2])
 

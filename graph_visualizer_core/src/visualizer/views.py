@@ -140,7 +140,7 @@ def add_filter(request, tag):
     attribute_name = request.POST['attribute_name']
     comparator = request.POST['comparator']
     attribute_value = request.POST['attribute_value']
-    filter_name = attribute_name + " " + comparator + " " + attribute_value
+    filter_name = attribute_name + "|" + comparator + "|" + attribute_value
 
     try:
         workspace.graph_store.add_filter(filter_name)
