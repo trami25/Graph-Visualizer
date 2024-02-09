@@ -94,7 +94,6 @@
 
         function createNode(node) {
             var nodeId = node.data.id;
-            let name = node.data.data.name
             var translateX = 125 * node.depth;
 
             hasChildren = false;
@@ -130,7 +129,7 @@
                 .on('click', function () {
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+
                 });
 
             svg.append('text')
@@ -143,7 +142,7 @@
                 .on('click', function () {
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+
 
                 
                 })
@@ -182,7 +181,7 @@
                     }
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+
                 });
 
             nodeElement.append('text')
@@ -197,7 +196,7 @@
                         .style('position', 'fixed');
 
                     d3.select('#nodeId').text('Node ID: ' + nodeId);
-                    d3.select('#nodeName').text('Node name: ' + node.data.data.name);
+
                 });
         }
         DFS(rootNode, createNode);

@@ -47,7 +47,15 @@ class Workspace:
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
         self._tree_template = tree_view.generate_template(graph)
-        
+
+    def handle_node_click(self, node_id):
+        # This method can be used to handle the click event on a node
+        # You can perform actions based on the clicked node_id and the entire graph
+        entire_graph = self._graph_store.root_graph  # Assuming root_graph is your entire graph
+
+        # Perform actions or send the data as needed
+        print(f"Clicked Node ID: {node_id}")
+        #self._tree_template = tree_view.generate_template(graph_to_tree, node_root)
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
@@ -63,6 +71,18 @@ class Workspace:
     def template(self) -> str:
         return self._template
 
+    @property
+    def tree_template(self):
+        return self._tree_template
+
+    @tree_template.setter
+    def tree_template(self, value):
+        self._tree_template = value
+
+    @property
+    def graph_store(self):
+        return self._graph_store
+
 
 class WorkspaceManager(metaclass=SingletonMeta):
     """Manages workspaces.
@@ -70,6 +90,7 @@ class WorkspaceManager(metaclass=SingletonMeta):
     Attributes:
         _workspaces: List of existing workspaces.
     """
+
     def __init__(self):
         self._workspaces: dict[str, Workspace] = {}
 
