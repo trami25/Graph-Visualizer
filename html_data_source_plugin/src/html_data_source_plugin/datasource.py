@@ -22,7 +22,7 @@ class HtmlDataSource(DataSource):
 
     def __init__(self):
         self._next_node_id = 1
-        self._graph = Graph([], [])
+        self._graph = Graph([], [], True)
         self._configuration = configuration_util.unmarshall_configuration() if configuration_util.configuration_exists() else configuration_util.create_default_configuration()
 
     @property
