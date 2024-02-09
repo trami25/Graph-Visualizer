@@ -1,4 +1,4 @@
-from graph_visualizer_platform.plugins import Plugin
+from graph_visualizer_platform.plugins import Plugin, PluginListener
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from graph_visualizer_platform.singleton import SingletonMeta
@@ -8,7 +8,7 @@ from graph_visualizer_platform.store import GraphStore
 from . import tree_view
 
 
-class Workspace:
+class Workspace(PluginListener):
     """Workspace contains information of the current plugins, graphs and filters, and views.
 
     Attributes:
@@ -18,6 +18,9 @@ class Workspace:
         _graph_store: Graph store for the current workspace.
         _template: The current template for the current workspace.
     """
+
+    def on_config_changed(self):
+        self.regenerate_graph()
 
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
@@ -47,15 +50,7 @@ class Workspace:
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
         self._tree_template = tree_view.generate_template(graph)
-
-    def handle_node_click(self, node_id):
-        # This method can be used to handle the click event on a node
-        # You can perform actions based on the clicked node_id and the entire graph
-        entire_graph = self._graph_store.root_graph  # Assuming root_graph is your entire graph
-
-        # Perform actions or send the data as needed
-        print(f"Clicked Node ID: {node_id}")
-        #self._tree_template = tree_view.generate_template(graph_to_tree, node_root)
+        
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
@@ -70,6 +65,11 @@ class Workspace:
     @property
     def template(self) -> str:
         return self._template
+
+    def regenerate_graph(self):
+        graph = self.active_data_source.instance.generate_graph()
+        self._graph_store.root_graph = graph
+        self._template = self.active_visualizer.instance.generate_template(graph)
 
     @property
     def tree_template(self):
@@ -120,6 +120,7 @@ class WorkspaceManager(metaclass=SingletonMeta):
             raise WorkspaceException(f'workspace with tag {tag} already exists')
 
         workspace = Workspace(tag, data_source, visualizer)
+        data_source.add_listener(workspace)
         self._workspaces[tag] = workspace
 
     def kill(self, tag: str) -> None:
@@ -130,6 +131,8 @@ class WorkspaceManager(metaclass=SingletonMeta):
         """
 
         try:
+            workspace = self.get_by_tag(tag)
             del self._workspaces[tag]
+            workspace.active_data_source.remove_listener(workspace)
         except KeyError as e:
             raise WorkspaceException(f'workspace with tag {tag} does not exist') from e
