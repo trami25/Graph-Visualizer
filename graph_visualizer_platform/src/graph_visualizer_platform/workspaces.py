@@ -5,6 +5,7 @@ from graph_visualizer_platform.singleton import SingletonMeta
 from graph_visualizer_platform.exceptions import WorkspaceException
 from typing import ItemsView, Optional
 from graph_visualizer_platform.store import GraphStore
+from . import tree_view
 
 
 class Workspace:
@@ -25,6 +26,7 @@ class Workspace:
         self._graph_store.root_graph = active_data_source.instance.generate_graph()
         self._active_visualizer = active_visualizer
         self._template = active_visualizer.instance.generate_template(self._graph_store.root_graph)
+        self._tree_template = tree_view.generate_template(self._graph_store.root_graph)
 
     @property
     def tag(self) -> str:
@@ -44,6 +46,8 @@ class Workspace:
         graph = value.instance.generate_graph()
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
+        self._tree_template = tree_view.generate_template(graph)
+        
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
@@ -53,6 +57,7 @@ class Workspace:
     def active_visualizer(self, value: Plugin[Visualizer]) -> None:
         self._active_visualizer = value
         self._template = value.instance.generate_template(self._graph_store.subgraph)
+        self._tree_template = tree_view.generate_template(self._graph_store.subgraph)
 
     @property
     def template(self) -> str:

@@ -2,7 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <title>Graph Visualizer</title>
+    <style>
+        .node circle {
+            fill: #ddd;
+            stroke: #000;
+            stroke-width: 1;
+        }
+
+        .node text {
+            text-anchor: middle;
+            alignment-baseline: central;
+        }
+
+        .edge text {
+            display: none;
+        }
+
+        .link {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+        .arrow {
+            fill: rgb(128, 128, 128);
+        }
+
+        .node-bird rect {
+            fill:darkgray;
+            stroke: #fff;
+
+        }
+
+        .link-bird {
+            fill: none;
+            stroke: #828282;
+            stroke-width: 0.5;
+        }
+        .node.focused circle {
+        fill: #ff0000;
+        stroke: #000;
+        stroke-width: 2;
+    }
+
+        .node-bird.focused {
+            fill: #ff0000;
+            stroke: #fff;
+        }
+
+        #graph-container {
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            border: 2px solid #000;
+        }
+
+        #graph-outline {
+            position: absolute;
+            pointer-events: none;
+            width: 70%;
+            flex-grow: 1;
+        }
+
+        #details {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 5px;
+            border: 1px solid #000;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Graph Visualizer</h1>
@@ -36,6 +109,12 @@
 
     {% block workspace %}
         <p>Select a workspace.</p>
+    {% endblock %}
+    {% block main %}
+
+    {% endblock %}
+     {% block tree %}
+     
     {% endblock %}
 </body>
 </html>

@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tree View</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+ <style>
         .node rect {
             fill: #fff;
             stroke: steelblue;
@@ -28,10 +22,13 @@
         }
 
         .container {
-            width: 300px; 
+            width: 30%; 
             height: 600px;
-            overflow: hidden;
+            overflow: scroll;
+            justify-content: right;
             position: relative;  
+            flex-grow: 1;
+            border-color: black;
         }
 
         .container2 {
@@ -58,24 +55,16 @@
         }
         
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="container2">
-            <svg id="tree-svg">
-                <g transform="translate(50,-300)">
-                </g>
-            </svg>
-        </div>
-    </div>
 
+    {{ html_template|safe }}
     <script>
 
-        var json_data = '{{ json_data|escapejs}}';
+        var treeData = JSON.parse('{{ my_json_data|escapejs }}');
+
 
         let cordinates = 0;
 
-        var treeData = JSON.parse(json_data);
+        // var treeData = JSON.parse(json_data);
 
         var treeLayout = d3.tree().size([2000, 1500]);
 
@@ -211,10 +200,6 @@
                     d3.select('#nodeName').text('Node name: ' + node.data.data.name);
                 });
         }
-
-
         DFS(rootNode, createNode);
-
     </script>
-</body>
-</html>
+
