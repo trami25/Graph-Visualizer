@@ -25,7 +25,7 @@ class JsonDataSource(DataSource):
         self._json_data = provide_json_data(os.path.join(os.path.dirname(__file__), "..", "..", "data.json"))
         self._next_node_id = 1
         self._node_cap = node_cap
-        self._graph = Graph([], [])
+        self._graph = Graph([], [], True)
 
     @property
     def configuration(self) -> Optional[dict[str, Any]]:
