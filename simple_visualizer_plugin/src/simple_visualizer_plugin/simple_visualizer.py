@@ -13,7 +13,7 @@ class SimpleVisualizer(Visualizer):
     to generate HTML for visualizing a graph.
 
     Attributes:
-        None
+        graph: Graph whose template it needs to be returned!
     """
 
     def generate_template(self, graph: Graph) -> str:
@@ -32,6 +32,7 @@ class SimpleVisualizer(Visualizer):
         edges_json = [{'source': edge.source.node_id, 'target': edge.target.node_id, 'data': edge.data}
                                  for edge in graph.edges]
 
-        html = template.render(nodes_json=nodes_json, edges_json=edges_json)
+        directed_json = json.dumps(graph.directed)
+        html = template.render(nodes_json=nodes_json, edges_json=edges_json, directed_json=directed_json)
 
         return html

@@ -6,13 +6,6 @@ from jinja2 import Environment, FileSystemLoader
 import os
 
 
-def default(obj):
-    if hasattr(obj, 'to_dict'):
-        return obj.to_dict()
-    else:
-        raise TypeError("Object of type {} is not JSON serializable".format(type(obj)))
-
-
 class BlockVisualizer(Visualizer):
     def generate_template(self, graph: Graph) -> str:
         script_folder = os.path.dirname(os.path.abspath(__file__))

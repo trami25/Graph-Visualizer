@@ -77,8 +77,6 @@
     </style>
 </head>
 <body>
-	 <div id="graph-container">
-        <div id="graph-outline"></div>
     <script>
         let nodes = {{ nodes_json|tojson }};
         let links = {{ edges_json|tojson }};
@@ -437,6 +435,8 @@
             d.fy = null;
 	    updateBirdView();
         }
+        birdView.on("click", function (event) {
+});
 
     </script>
      </div>
