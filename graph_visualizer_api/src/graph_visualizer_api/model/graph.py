@@ -4,6 +4,7 @@ from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
 from typing import Optional, Any
+import random
 
 
 class Graph:
@@ -148,13 +149,15 @@ class Graph:
                         satisfies_all_filters = str(node.data[filter.attribute_name]) >= filter.attribute_value
                     elif filter.comparator == '<=':
                         satisfies_all_filters = str(node.data[filter.attribute_name]) <= filter.attribute_value
-                    elif filter.comparator == 'contains':
+                    elif filter.comparator == ':':
                         for key, value in node.data.items():
                             if str(filter.attribute_value).lower() in str(key).lower() or str(
                                     filter.attribute_value).lower() in str(value).lower():
                                 satisfies_all_filters = True
                                 break
                             satisfies_all_filters = False
+                        if str(filter.attribute_value).lower() in str(node.node_id).lower():
+                            satisfies_all_filters = True
                     else:
                         raise GraphError("invalid comparator")
 
@@ -185,3 +188,13 @@ class Graph:
         nodes = ''.join([f'{node}\n' for node in self._nodes])
         edges = ''.join([f'{edge}\n' for edge in self._edges])
         return nodes + edges
+
+
+    def get_random_node(self) -> Optional[Node]:
+        """Get a random node from the graph.
+
+        :returns: Random node from the graph, or None if the graph is empty.
+        """
+        if not self.nodes:
+            return None
+        return random.choice(self.nodes)

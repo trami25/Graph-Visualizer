@@ -33,4 +33,4 @@ class Filter:
         return self._attribute_name == other._attribute_name and self._comparator == other._comparator and self._attribute_value == other._attribute_value
 
     def __str__(self):
-        return f"<{self._attribute_name} {self._comparator} {self._attribute_value}>"
+        return f"{self._attribute_name} {self._comparator} {self._attribute_value}"

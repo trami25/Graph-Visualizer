@@ -1,80 +1,111 @@
-from .node import Node
-from .edge import Edge
-from .exceptions import GraphError
-from typing import Optional
-
+from typing import List
+from .graph import Graph
+import yaml
+import json
 
 class TreeNode:
-    """Model of a node in a tree.
+    """Model of a node in a tree."""
 
-    Represents a node in a tree structure.
+    def __init__(self, node_id, data):
+        self.node_id = node_id
+        self.data = data
+        self.children = []
 
-    Attributes:
-        node: Reference to the original graph node.
-        all_children: List of all children nodes in the tree hierarchy.
-    """
-
-    def __init__(self, node: Node):
-        self.node = node
-        self.all_children = []
-
-    def add_child(self, child_node: 'TreeNode') -> None:
-        """Add a child node to the current node.
-
-        :param child_node: Child node to add.
-        """
-        self.all_children.append(child_node)
+    def add_child(self, child):
+        self.children.append(child)
 
 
 class Tree:
-    """Model of a tree.
+    """Model of a tree."""
 
-    Tree class containing a list of tree nodes.
+    def __init__(self, root):
+        self.root = root
 
-    Attributes:
-        root: The root node of the tree.
-        directed: Behaviour of the graph/tree.
-    """
+    def __str__(self):
+        return self._tree_str(self.root)
 
-    def __init__(self, root_node: Node, directed: bool):
-        self.root = TreeNode(root_node)
-        self.directed = directed
+    def _tree_str(self, node: TreeNode, level=0):
+        result = "  " * level + f"Node[{node.node_id}]\n"
+        for child in node.children:
+            result += self._tree_str(child, level + 1)
+        return result
 
-    def update_tree(self, focused_node: Node, graph_edges: list[Edge]) -> None:
-        """Update the tree based on the focused node in the graph.
-
-        :param focused_node: The focused node in the graph.
-        :param graph_edges: List of edges in the graph.
-        """
-        self.root = self._build_tree(focused_node, graph_edges, set())
-
-    def _build_tree(self, current_node: Node, graph_edges: list[Edge], visited_nodes: set) -> Optional[TreeNode]:
-        """Recursively build the tree starting from the current node.
-
-        :param current_node: The current node.
-        :param graph_edges: List of edges in the graph.
-        :param visited_nodes: Set of visited nodes to handle cyclic graphs.
-        :returns: The TreeNode representing the current node and its children.
-        """
-        if current_node in visited_nodes:
+    def from_graph(self, graph: Graph, start_node_id):
+        """Construct a tree from a graph starting from the specified node."""
+        start_node = graph.get_node_by_id(start_node_id)
+        if start_node is None:
             return None
 
-        tree_node = TreeNode(current_node)
-        visited_nodes.add(current_node)
+        visited = set()
+        tree_node = self._dfs(graph, start_node, visited)
 
-        if self.directed:
-            children_edges = [edge for edge in graph_edges if edge.source == current_node]
+        if tree_node:
+            return Tree(tree_node)
         else:
-            children_edges = [edge for edge in graph_edges if current_node in (edge.source, edge.target)]
+            return None
 
-        for child_edge in children_edges:
-            if current_node == child_edge.source:
-                child_node = child_edge.target
-            else:
-                child_node = child_edge.source
-            child_tree_node = self._build_tree(child_node, graph_edges, visited_nodes)
-            if child_tree_node:
-                tree_node.add_child(child_tree_node)
+    def _dfs(self, graph: Graph, node: TreeNode, visited: List):
+        """Depth-First Search traversal to construct the tree."""
+        if node.node_id in visited:
+            return None
 
-        visited_nodes.remove(current_node)
+        visited.add(node.node_id)
+        tree_node = TreeNode(node.node_id, node.data)
+
+        for neighbor in self._get_neighbors(graph, node):
+            child_node = self._dfs(graph, neighbor, visited)
+            if child_node:
+                tree_node.add_child(child_node)
+
         return tree_node
+
+    def _get_neighbors(self, graph, node):
+        """Get neighboring nodes of a given node."""
+        neighbors = []
+        for edge in graph.edges:
+            if edge.source == node:
+                neighbors.append(edge.target)
+            elif edge.target == node:
+                neighbors.append(edge.source)
+        return neighbors
+
+
+    def to_yaml(self):
+        """Convert the tree structure to YAML format."""
+        yaml_data = self._tree_to_yaml(self.root)
+        with open("graph_visualizer_platform\\src\\graph_visualizer_platform\\tree_view_data.yaml", "w") as file:
+            for line in yaml_data:
+                file.write(line + '\n')
+            
+        return yaml_data
+
+    def _tree_to_yaml(self, node: TreeNode, indentation=""):
+        """Convert the tree to YAML format."""
+        yaml_data = []
+        yaml_data.append(indentation + f"id: {node.node_id}")
+        yaml_data.append(indentation + f"data: {node.data}")
+        yaml_data.append(indentation + "children:")
+        for child in reversed(node.children):
+            child_yaml = self._tree_to_yaml(child, indentation + "  ")
+            yaml_data.extend(child_yaml)
+        return yaml_data
+
+
+    def to_json(self):
+        """Convert the tree structure to JSON format."""
+        json_data = self._tree_to_json(self.root)
+        with open("graph_visualizer_platform\\src\\graph_visualizer_platform\\tree_view_data.json", "w") as file:
+            json.dump(json_data, file, indent=4)
+        return json_data
+
+    def _tree_to_json(self, node: TreeNode):
+        """Convert the tree to JSON format."""
+        json_data = {
+            "id": node.node_id,
+            "data": node.data,
+            "children": []
+        }
+        for child in node.children:
+            child_json = self._tree_to_json(child)
+            json_data["children"].append(child_json)
+        return json_data

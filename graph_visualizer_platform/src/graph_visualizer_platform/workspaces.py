@@ -1,13 +1,14 @@
-from graph_visualizer_platform.plugins import Plugin
+from graph_visualizer_platform.plugins import Plugin, PluginListener
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
 from graph_visualizer_platform.singleton import SingletonMeta
 from graph_visualizer_platform.exceptions import WorkspaceException
 from typing import ItemsView, Optional
 from graph_visualizer_platform.store import GraphStore
+from . import tree_view
 
 
-class Workspace:
+class Workspace(PluginListener):
     """Workspace contains information of the current plugins, graphs and filters, and views.
 
     Attributes:
@@ -18,13 +19,17 @@ class Workspace:
         _template: The current template for the current workspace.
     """
 
+    def on_config_changed(self):
+        self.regenerate_graph()
+
     def __init__(self, tag: str, active_data_source: Plugin[DataSource], active_visualizer: Plugin[Visualizer]):
         self._tag = tag
         self._graph_store: GraphStore = GraphStore()
         self._active_data_source = active_data_source
         self._graph_store.root_graph = active_data_source.instance.generate_graph()
         self._active_visualizer = active_visualizer
-        self._template = active_visualizer.instance.generate_template(self._graph_store.root_graph)
+        self._template = active_visualizer.instance.generate_template(self._graph_store.subgraph)
+        self._tree_template = tree_view.generate_template(self._graph_store.root_graph)
 
     @property
     def tag(self) -> str:
@@ -44,6 +49,7 @@ class Workspace:
         graph = value.instance.generate_graph()
         self._graph_store.root_graph = graph
         self._template = self.active_visualizer.instance.generate_template(graph)
+        self._tree_template = tree_view.generate_template(graph)
 
     @property
     def active_visualizer(self) -> Plugin[Visualizer]:
@@ -53,10 +59,35 @@ class Workspace:
     def active_visualizer(self, value: Plugin[Visualizer]) -> None:
         self._active_visualizer = value
         self._template = value.instance.generate_template(self._graph_store.subgraph)
+        self._tree_template = tree_view.generate_template(self._graph_store.subgraph)
 
     @property
     def template(self) -> str:
         return self._template
+
+    @property
+    def graph_store(self) -> GraphStore:
+        return self._graph_store
+
+    def add_filter(self, prompt: str) -> None:
+        """Adds a filter to the graph store.
+
+        :param prompt: String to parse into a filter.
+        """
+        self._graph_store.add_filter(prompt)
+        self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
+
+    def remove_filter(self, prompt: str) -> None:
+        """Removes a filter from the graph store.
+
+        :param prompt: String to parse into a filter.
+        """
+        self._graph_store.remove_filter(prompt)
+        self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
+    def regenerate_graph(self):
+        graph = self.active_data_source.instance.generate_graph()
+        self._graph_store.root_graph = graph
+        self._template = self.active_visualizer.instance.generate_template(graph)
 
 
 class WorkspaceManager(metaclass=SingletonMeta):
@@ -65,6 +96,7 @@ class WorkspaceManager(metaclass=SingletonMeta):
     Attributes:
         _workspaces: List of existing workspaces.
     """
+
     def __init__(self):
         self._workspaces: dict[str, Workspace] = {}
 
@@ -94,6 +126,7 @@ class WorkspaceManager(metaclass=SingletonMeta):
             raise WorkspaceException(f'workspace with tag {tag} already exists')
 
         workspace = Workspace(tag, data_source, visualizer)
+        data_source.add_listener(workspace)
         self._workspaces[tag] = workspace
 
     def kill(self, tag: str) -> None:
@@ -104,6 +137,8 @@ class WorkspaceManager(metaclass=SingletonMeta):
         """
 
         try:
+            workspace = self.get_by_tag(tag)
             del self._workspaces[tag]
+            workspace.active_data_source.remove_listener(workspace)
         except KeyError as e:
             raise WorkspaceException(f'workspace with tag {tag} does not exist') from e
