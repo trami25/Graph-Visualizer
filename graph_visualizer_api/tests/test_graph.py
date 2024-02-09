@@ -6,6 +6,7 @@ from graph_visualizer_api.model.node import Node
 from graph_visualizer_api.model.edge import Edge
 from graph_visualizer_api.model.filter import Filter
 from graph_visualizer_api.model.exceptions import GraphError
+from graph_visualizer_api.model.filter_strategies import *
 
 
 class TestGraph(unittest.TestCase):
@@ -136,10 +137,10 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(0, len(graph.get_nodes_by_attributes(name='Mika')))
 
     def test_filter_and_search(self):
-        filter = Filter('search', ':', 'ra')
-        filter2 = Filter('date', '>=', str(date.today()))
-        filter3 = Filter('age', '<', '22')
-        filter4 = Filter('search', ':', 'ra')
+        filter = Filter('search', ':', 'ra', SearchFilterStrategy())
+        filter2 = Filter('date', '>=', str(date.today()), GreaterThanOrEqualsFilterStrategy())
+        filter3 = Filter('age', '<', '22', LessThanFilterStrategy())
+        filter4 = Filter('search', ':', 'ra', SearchFilterStrategy())
         filters = [filter, filter2]
 
         node1 = Node(1, {'name': 'Pera', 'lastName': 'Peria', 'age': 19, "date": date.today()+timedelta(1)})
