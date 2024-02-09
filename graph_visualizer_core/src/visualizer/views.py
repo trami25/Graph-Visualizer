@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.apps.registry import apps
 from django.http import Http404, HttpResponseBadRequest
+from django.utils.datastructures import MultiValueDictKeyError
 
 from graph_visualizer_platform.plugins import PluginManager
 from graph_visualizer_platform.workspaces import WorkspaceManager
@@ -10,9 +11,14 @@ from graph_visualizer_platform.exceptions import WorkspaceException, PluginExcep
 # Create your views here.
 def index(request):
     workspaces = apps.get_app_config('visualizer').workspaces
+    visualizer_plugins = apps.get_app_config('visualizer').visualizer_plugins
+    data_source_plugins = apps.get_app_config('visualizer').data_source_plugins
+
     return render(request, 'visualizer/base.html',
                   context={
-                      'workspaces': workspaces
+                      'workspaces': workspaces,
+                      'visualizer_plugins': visualizer_plugins,
+                      'data_source_plugins': data_source_plugins
                   })
 
 
@@ -43,9 +49,15 @@ def new_workspace(request):
         return HttpResponseBadRequest('Tag cannot be empty.')
 
     try:
-        workspace_manager.spawn(request.POST['tag'], plugin_manager.get_data_source_by_name('html'),
-                                plugin_manager.get_visualizer_by_name('simple'))
-    except WorkspaceException as e:
+        selected_data_source = request.POST['datasource']
+        selected_visualizer = request.POST['visualizer']
+    except MultiValueDictKeyError:
+        return HttpResponseBadRequest('No data source or visualizer selected.')
+
+    try:
+        workspace_manager.spawn(request.POST['tag'], plugin_manager.get_data_source_by_name(selected_data_source),
+                                plugin_manager.get_visualizer_by_name(selected_visualizer))
+    except (WorkspaceException, PluginException) as e:
         return HttpResponseBadRequest(e)
 
     return redirect('index')
