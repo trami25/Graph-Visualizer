@@ -47,7 +47,6 @@
 	 .node-bird rect {
             fill: none;
             stroke: #fff;
-
         }
 
         .link-bird {
@@ -55,6 +54,16 @@
             stroke: #808080;
             stroke-width: 0.5;
         }
+        .node.focused rect {
+        fill: #ff0000;
+        stroke: #000;
+        stroke-width: 2;
+    }
+
+    .node-bird.focused  {
+        fill: #ff0000;
+        stroke: #fff;
+    }
 	 #graph-container {
             border: 2px solid #000;
             overflow: hidden;
@@ -63,7 +72,6 @@
 
         #graph-outline {
             position: absolute;
-            border: 2px solid #000;
             pointer-events: none;
         }
     </style>
@@ -72,11 +80,25 @@
 	 <div id="graph-container">
         <div id="graph-outline"></div>
     <script>
-        let nodes = JSON.parse('{{ nodes_json|safe }}');
-        let links = JSON.parse('{{ edges_json|safe }}');
-        let isDirected = true;
+        let nodes = {{ nodes_json|tojson }};
+        let links = {{ edges_json|tojson }};
+        let isDirected =JSON.parse('{{ directed|safe }}');
         const width = 1000;
         const height = 600;
+	    let node_width;
+	    let node_height;
+
+	    const maxLength = nodes.reduce((max, node) => {
+    	    const entries = Object.entries(node.data);
+    	    const maxLengthEntry = entries.reduce((max, [key, value]) => {
+                const combinedLength = (value === null) ? 3 + key.length : value.toString().length + key.length;
+                return Math.max(max, combinedLength);
+            }, 0);
+        return Math.max(max, maxLengthEntry);
+        }, 0);
+
+	    node_width = maxLength * 8;
+
 
         const svg = d3.select("#graph-container").append("svg")
             .attr("width", width)
@@ -96,7 +118,13 @@
             .data(links)
             .enter().append("text")
             .attr("class", "edge-label")
-            .text(d => d.node_id);
+            .text(d => {
+            	if (d.data && Object.keys(d.data).length > 0) {
+            	    return Object.values(d.data)[0]; // Vraćanje vrednosti prvog ključa iz objekta d.data ako postoji
+            	} else {
+            	    return ""; // Vraćanje praznog stringa ako objekat nema ključeva
+            	}
+            });
 
         const linkForce = d3.forceLink(links)
             .id(d => d.node_id)
@@ -105,8 +133,6 @@
             .iterations(1);
 
         const simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-2000))
-            .force("collide", d3.forceCollide(200))
             .force("link", linkForce)
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -119,22 +145,25 @@
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        nodeElements.append("rect")
-            .attr("width", 120)
-            .attr("height", 100);
+        const rect = nodeElements.append("rect")
+            .attr("width", node_width)
+            .attr("height", node_height);
 
-        let duzina;
         const foreignObjects = nodeElements.append("foreignObject")
-            .attr("width", 120)
+            .attr("width", node_width)
             .attr("height", function(d) {
                 const relevantAttributes = Object.keys(d)
                     .filter(key => key !== 'id' && key !== 'x' && key !== 'y' && key !== 'index');
                 const numAttributes = relevantAttributes.length;
-                duzina = (numAttributes + 1) * 20;
-                return numAttributes * 20; // Initial height + height per attribute
+		        node_height = (numAttributes+1) * 21 + 27;
+                return node_height
             })
             .append("xhtml:div");
 
+	    rect.attr("height", node_height)
+
+        simulation .force("charge", d3.forceManyBody().strength(-10*node_width))
+            .force("collide", d3.forceCollide(4*node_height));
         foreignObjects.append("h3")
             .text(d => d.node_id);
 
@@ -156,9 +185,6 @@
             .attr("orient", "auto")
             .append("path")
             .attr("d", "M 0 0 L 10 5 L 0 10 Z");
-
-
-
 
         d3.select("#graph-outline")
                 .style("width", `${width}px`)
@@ -192,60 +218,77 @@
             .enter().append("line")
             .attr("class", "link-bird");
 
-         function updateBirdView() {
+            function updateBirdView() {
                     // Calculate the extent of the graph
-                    let graphExtent = getGraphExtent();
+                let graphExtent = getGraphExtent();
 
-                    // Calculate the scale factor for the birdView
-                    const scaleX = birdViewWidth / graphExtent.width;
-                    const scaleY = birdViewHeight / graphExtent.height;
-                    const scale = Math.min(scaleX, scaleY);
+                // Calculate the scale factor for the birdView
+                const scaleX = birdViewWidth / graphExtent.width;
+                const scaleY = birdViewHeight / graphExtent.height;
+                const scale = Math.min(scaleX, scaleY);
 
                     // Apply the scale to nodes and edges
-                    birdViewNodes
-                        .attr("x", d => Math.max(0, Math.min(birdViewWidth - 10, (d.x - graphExtent.minX) * scale)))
-                        .attr("y", d => Math.max(0, Math.min(birdViewHeight - 10, (d.y - graphExtent.minY) * scale)));
+                birdViewNodes
+                    .attr("x", d => Math.max(0, Math.min(birdViewWidth - 10, (d.x - graphExtent.minX) * scale)))
+                    .attr("y", d => Math.max(0, Math.min(birdViewHeight - 10, (d.y - graphExtent.minY) * scale)));
 
-                    birdViewEdges
-                        .attr("x1", d => Math.max(0, Math.min(birdViewWidth - 10, (d.source.x - graphExtent.minX) * scale)))
-                        .attr("y1", d => Math.max(0, Math.min(birdViewHeight - 10, (d.source.y - graphExtent.minY) * scale)))
-                        .attr("x2", d => Math.max(0, Math.min(birdViewWidth - 10, (d.target.x - graphExtent.minX) * scale)))
-                        .attr("y2", d => Math.max(0, Math.min(birdViewHeight - 10, (d.target.y - graphExtent.minY) * scale)));
-
-
-                    const transform = d3.zoomTransform(svg.node());
-                    const mainViewX = -transform.x / transform.k;
-                    const mainViewY = -transform.y / transform.k;
-                    const mainViewWidth = width / transform.k;
-                    const mainViewHeight = height / transform.k;
-
-                    frameX = mainViewX;
-                    frameY = mainViewY;
-                    frameWidth = mainViewWidth;
-                    frameHeight = mainViewHeight;
+                birdViewEdges
+                    .attr("x1", d => Math.max(0, Math.min(birdViewWidth - 10, (d.source.x - graphExtent.minX) * scale)))
+                    .attr("y1", d => Math.max(0, Math.min(birdViewHeight - 10, (d.source.y - graphExtent.minY) * scale)))
+                    .attr("x2", d => Math.max(0, Math.min(birdViewWidth - 10, (d.target.x - graphExtent.minX) * scale)))
+                    .attr("y2", d => Math.max(0, Math.min(birdViewHeight - 10, (d.target.y - graphExtent.minY) * scale)));
 
 
-                    updateFrame();
-                }
+                const transform = d3.zoomTransform(svg.node());
+                const mainViewX = -transform.x / transform.k;
+                const mainViewY = -transform.y / transform.k;
+                const mainViewWidth = width / transform.k;
+                const mainViewHeight = height / transform.k;
+
+                frameX = mainViewX;
+                frameY = mainViewY;
+                frameWidth = mainViewWidth;
+                frameHeight = mainViewHeight;
+
+
+                updateFrame();
+            }
 
                 // Function to get the extent (min and max coordinates) of the graph
-                function getGraphExtent() {
-                    const minX = d3.min(nodes, d => d.x);
-                    const minY = d3.min(nodes, d => d.y);
-                    const maxX = d3.max(nodes, d => d.x);
-                    const maxY = d3.max(nodes, d => d.y);
+        function getGraphExtent() {
+            const minX = d3.min(nodes, d => d.x);
+            const minY = d3.min(nodes, d => d.y);
+            const maxX = d3.max(nodes, d => d.x);
+            const maxY = d3.max(nodes, d => d.y);
 
-                    return {
-                        minX: minX,
-                        minY: minY,
-                        maxX: maxX,
-                        maxY: maxY,
-                        width: maxX - minX,
-                        height: maxY - minY
-                    };
-                }
+            return {
+                minX: minX,
+                minY: minY,
+                maxX: maxX,
+                maxY: maxY,
+                width: maxX - minX,
+                height: maxY - minY
+            };
+        }
 
+            nodeElements.on("click", clickNode);
+            birdViewNodes.on("click", clickNode);
+           function clickNode(event, d) {
+                // Remove focus from all nodes
+                nodeElements.classed("focused", false);
+                birdViewNodes.classed("focused", false);
 
+                // Add focus to the clicked node
+                d3.select(this).classed("focused", true);
+
+                // Find the corresponding node in the opposite view by ID
+                const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
+                    .filter(node => node.node_id === d.node_id);
+
+                // Add focus to the corresponding node in the opposite view
+                correspondingNode.classed("focused", true);
+
+            }
 
         function updateFrame() {
             return new Promise(resolve => {
@@ -312,10 +355,10 @@
         simulation.on("tick", () => {
           linkElements.each(function(d) {
 
-            const sourceX = d.source.x + 120 / 2; // X koordinata centra čvora
-            const sourceY = d.source.y + duzina / 2; // Y koordinata centra čvora
-            const targetX = d.target.x + 120 / 2; // X koordinata centra čvora
-            const targetY = d.target.y + duzina / 2; // Y koordinata centra čvora
+            const sourceX = d.source.x + node_width / 2; // X koordinata centra čvora
+            const sourceY = d.source.y + node_height / 2; // Y koordinata centra čvora
+            const targetX = d.target.x + node_width / 2; // X koordinata centra čvora
+            const targetY = d.target.y + node_height / 2; // Y koordinata centra čvora
 
             // Izračunaj razliku u x i y koordinatama
             const dx = targetX - sourceX;
@@ -329,13 +372,13 @@
             const unitDy = dy / length;
 
             // Definiši ivicu čvora kao offset od centra čvora
-            const nodeEdgeOffset = 10; // Prilagodite ovu vrednost prema potrebama
+            const nodeEdgeOffset = 0; // Prilagodite ovu vrednost prema potrebama
 
             // Izračunaj koordinate tačaka početka i kraja linije tako da idu do ivice čvorova
-            const edgeSourceX = sourceX + (unitDx * (120 / 2 + nodeEdgeOffset));
-            const edgeSourceY = sourceY + (unitDy * (duzina / 2 + nodeEdgeOffset));
-            const edgeTargetX = targetX - (unitDx * (120 / 2 + nodeEdgeOffset));
-            const edgeTargetY = targetY - (unitDy * (duzina / 2 + nodeEdgeOffset));
+            const edgeSourceX = sourceX + (unitDx * (node_width / 2 + nodeEdgeOffset));
+            const edgeSourceY = sourceY + (unitDy * (node_height / 2 + nodeEdgeOffset));
+            const edgeTargetX = targetX - (unitDx * (node_width / 2 + nodeEdgeOffset));
+            const edgeTargetY = targetY - (unitDy * (node_height / 2 + nodeEdgeOffset));
 
             // Postavi koordinate tačaka početka i kraja linije
             d3.select(this).attr("x1", edgeSourceX)
@@ -345,13 +388,13 @@
         });
 
             linkLabels
-                .attr("x", d => (d.source.x + d.target.x) / 2 + 60)
-                .attr("y", d => (d.source.y + d.target.y) / 2 + 60);
+                .attr("x", d => (d.source.x + d.target.x) / 2 + node_width / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2 + node_height / 2);
 
             function calculateMarkerEnd(d) {
                 const angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
-                const refX = 60 + Math.cos(angle) * 30;
-                const refY = 30 + Math.sin(angle) * 30;
+                const refX = node_width + Math.cos(angle) * 60;
+                const refY = node_height + Math.sin(angle) * 30;
                 return isDirected ? `url(#arrowhead)` : null;
             }
 
