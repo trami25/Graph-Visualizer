@@ -1,5 +1,6 @@
 from graph_visualizer_api.model.filter import Filter
 from graph_visualizer_api.model.graph import Graph
+from graph_visualizer_platform.filter_strategies import *
 from typing import Optional
 
 
@@ -67,7 +68,17 @@ class GraphStore:
         :param prompt: string to parse into a filter.
         :return: filter
         """
+
+        comparator_to_strategy = {
+            '=': EqualsFilterStrategy(),
+            '!=': NotEqualsFilterStrategy(),
+            '>': GreaterThanFilterStrategy(),
+            '<': LessThanFilterStrategy(),
+            '>=': GreaterThanOrEqualsFilterStrategy(),
+            '<=': LessThanOrEqualsFilterStrategy(),
+            ':': SearchFilterStrategy()
+        }
         filter_tokens = prompt.split("|")
         if len(filter_tokens) != 3 or filter_tokens[1] not in ['=', '!=', '>', '<', '>=', '<=', ':']:
             raise ValueError("Invalid filter")
-        return Filter(filter_tokens[0], filter_tokens[1], filter_tokens[2])
+        return Filter(filter_tokens[0], filter_tokens[1], filter_tokens[2], comparator_to_strategy[filter_tokens[1]])

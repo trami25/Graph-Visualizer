@@ -4,6 +4,7 @@ from .node import Node
 from .edge import Edge
 from .exceptions import GraphError
 from typing import Optional, Any
+from graph_visualizer_platform.filter_strategies import *
 import random
 
 
@@ -137,29 +138,26 @@ class Graph:
             satisfies_all_filters = False
             for filter in filters:
                 if filter.attribute_name in node.data.keys() or filter.attribute_name == 'search':
-                    if filter.comparator == '=':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) == filter.attribute_value
-                    elif filter.comparator == '!=':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) != filter.attribute_value
-                    elif filter.comparator == '>':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) > filter.attribute_value
-                    elif filter.comparator == '<':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) < filter.attribute_value
-                    elif filter.comparator == '>=':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) >= filter.attribute_value
-                    elif filter.comparator == '<=':
-                        satisfies_all_filters = str(node.data[filter.attribute_name]) <= filter.attribute_value
-                    elif filter.comparator == ':':
-                        for key, value in node.data.items():
-                            if str(filter.attribute_value).lower() in str(key).lower() or str(
-                                    filter.attribute_value).lower() in str(value).lower():
-                                satisfies_all_filters = True
-                                break
-                            satisfies_all_filters = False
-                        if str(filter.attribute_value).lower() in str(node.node_id).lower():
-                            satisfies_all_filters = True
+                    if filter.comparator == ':':
+                        list_of_values = [item for pair in node.data.items() for item in pair]
+                        list_of_values.append(str(node.node_id))
+                        satisfies_all_filters = filter.strategy.satisfies_filter(list_of_values, filter.attribute_value)
                     else:
-                        raise GraphError("invalid comparator")
+                        satisfies_all_filters = filter.strategy.satisfies_filter(node.data[filter.attribute_name], filter.attribute_value)
+
+                    # elif filter.comparator == ':':
+                    #     for key, value in node.data.items():
+                    #         if str(filter.attribute_value).lower() in str(key).lower() or str(
+                    #                 filter.attribute_value).lower() in str(value).lower():
+                    #             satisfies_all_filters = True
+                    #             break
+                    #         satisfies_all_filters = False
+                    #     if str(filter.attribute_value).lower() in str(node.node_id).lower():
+                    #         satisfies_all_filters = True
+                    # else:
+                    #     raise GraphError("invalid comparator")
+                elif filter.attribute_name == 'node_id':
+                    satisfies_all_filters = filter.strategy.satisfies_filter(node.node_id, filter.attribute_value)
 
                 if not satisfies_all_filters:
                     satisfies_all_filters = False

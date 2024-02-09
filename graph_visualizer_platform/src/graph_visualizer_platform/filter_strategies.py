@@ -42,3 +42,11 @@ class GreaterThanOrEqualsFilterStrategy(FilterStrategy):
 class LessThanOrEqualsFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
         return str(data) <= attribute_value
+
+
+class SearchFilterStrategy(FilterStrategy):
+    def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
+        for value in data:
+            if str(attribute_value).lower() in str(value).lower():
+                return True
+        return False

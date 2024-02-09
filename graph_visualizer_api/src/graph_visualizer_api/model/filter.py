@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from graph_visualizer_platform.filter_strategies import FilterStrategy
 
 class Filter:
     """Model of a filter for a graph.
@@ -12,10 +12,11 @@ class Filter:
         attribute_value: The value to compare the attribute to.
     """
 
-    def __init__(self, attribute_name: str, comparator: str, attribute_value: str):
+    def __init__(self, attribute_name: str, comparator: str, attribute_value: str, strategy: FilterStrategy):
         self._attribute_name = attribute_name
         self._comparator = comparator
         self._attribute_value = attribute_value
+        self._strategy = strategy
 
     @property
     def attribute_name(self):
@@ -28,6 +29,10 @@ class Filter:
     @property
     def attribute_value(self):
         return self._attribute_value
+
+    @property
+    def strategy(self):
+        return self._strategy
 
     def __eq__(self, other: Filter) -> bool:
         return self._attribute_name == other._attribute_name and self._comparator == other._comparator and self._attribute_value == other._attribute_value
