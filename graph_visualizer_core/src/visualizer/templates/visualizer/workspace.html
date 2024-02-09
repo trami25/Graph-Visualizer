@@ -11,7 +11,7 @@
         <li>Active data source: {{ active_workspace.active_data_source.name }} <a href="/config/{{ active_workspace.active_data_source.name }}">configure</a></li>
         <li>Active visualizer: {{ active_workspace.active_visualizer.name }}</li>
     </ul>
-    <form action="/workspace/{{ active_workspace.tag }}/plugins/" method="post">
+    <form class="change-plugins-form" action="/workspace/{{ active_workspace.tag }}/plugins/" method="post">
         {% csrf_token %}
         <label>
             Change data source:
@@ -31,7 +31,7 @@
         </label>
         <button type="submit">Change</button>
     </form>
-   <form action="/workspace/{{ active_workspace.tag }}/" method="get">
+   <form style="margin-top: 1em" action="/workspace/{{ active_workspace.tag }}/" method="get">
     <label>
         {% if node_id %}
             Selected Node ID: {{ node_id }}
@@ -43,7 +43,7 @@
     </label>
     <button type="submit">OK!</button>
 </form>
-    <form action="/workspace/{{ active_workspace.tag }}/add_filter/" method="post">
+    <form style="margin-top: 1em" action="/workspace/{{ active_workspace.tag }}/add_filter/" method="post">
         {% csrf_token %}
     <label>
         Filter:
@@ -60,14 +60,14 @@
         <button type="submit">Apply</button>
     </label>
     </form>
-    <form action="/workspace/{{ active_workspace.tag }}/search/" method="post">
+    <form style="margin-top: 1em" action="/workspace/{{ active_workspace.tag }}/search/" method="post">
         {% csrf_token %}
         <label>Search:
             <input type="text" name="search">
             <button type="submit">Search</button>
         </label>
     </form>
-    <form action="/workspace/{{ active_workspace.tag }}/remove_filter/" method="post">
+    <form style="margin-top: 1em" action="/workspace/{{ active_workspace.tag }}/remove_filter/" method="post">
         {% csrf_token %}
     <label>
         Remove filter:
@@ -102,6 +102,6 @@
 
         <div id="graph-outline"></div>
          <div id="details"></div>
-        
+
     </div>
 {% endblock %}
