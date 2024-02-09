@@ -8,7 +8,7 @@
     <h1>Configuration for {{ name }}</h1>
 
     {% if options %}
-        <form action="/config/{{ name }}/update/" method="post">
+        <form style="display: flex; flex-direction: column; align-items: start; row-gap: .5em" action="/config/{{ name }}/update/" method="post">
         {% csrf_token %}
             {% for key, value in options %}
                 <label>
