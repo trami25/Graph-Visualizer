@@ -78,7 +78,7 @@
     </style>
 </head>
 <body>
-    <h1>Graph Visualizer</h1>
+    <h1><a href="/">Graph Visualizer</a></h1>
     <h3>Workspaces</h3>
     {% if workspaces %}
         <ul>
@@ -95,6 +95,22 @@
         <label>
             Tag:
             <input name="tag" type="text">
+        </label>
+        <label>
+            Data source plugins:
+            <select name="datasource">
+                {% for plugin in data_source_plugins %}
+                    <option value={{ plugin.name }}>{{ plugin.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Visualizer plugins:
+            <select name="visualizer">
+                {% for plugin in visualizer_plugins %}
+                    <option value={{ plugin.name }}>{{ plugin.name }}</option>
+                {% endfor %}
+            </select>
         </label>
         <button type="submit">Create new workspace</button>
     </form>
