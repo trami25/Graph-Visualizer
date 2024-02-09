@@ -77,6 +77,7 @@ class Workspace(PluginListener):
         """
         self._graph_store.add_filter(prompt)
         self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
+        self._tree_template = tree_view.generate_template(self._graph_store.subgraph)
 
     def remove_filter(self, prompt: str) -> None:
         """Removes a filter from the graph store.
@@ -85,6 +86,7 @@ class Workspace(PluginListener):
         """
         self._graph_store.remove_filter(prompt)
         self._template = self.active_visualizer.instance.generate_template(self._graph_store.subgraph)
+        self._tree_template = tree_view.generate_template(self._graph_store.subgraph)
     def regenerate_graph(self):
         graph = self.active_data_source.instance.generate_graph()
         self._graph_store.root_graph = graph

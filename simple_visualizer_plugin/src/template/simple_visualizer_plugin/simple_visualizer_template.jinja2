@@ -4,7 +4,7 @@
         <script>
             let nodes = {{ nodes_json|tojson }};
             let edges = {{ edges_json|tojson }};
-            let graph_directed =JSON.parse('{{ directed|safe }}');
+            let graph_directed =JSON.parse('{{ directed_json|safe }}');
 
             const width = 1000;
             const height = 600;

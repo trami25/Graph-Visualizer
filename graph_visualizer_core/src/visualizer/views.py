@@ -36,8 +36,6 @@ def workspace_view(request, tag):
     if node_id is not None:
         node_id1 = int(node_id)
         active_workspace.tree_template = tree_view.generate_template(active_workspace.graph_store.root_graph, node_id1)
-        print("Node ID: ", node_id)
-    print("Node ID: ", node_id)
     my_template = active_workspace.template
     my_tree = active_workspace.tree_template
     return render(request, 'visualizer/workspace.html',
