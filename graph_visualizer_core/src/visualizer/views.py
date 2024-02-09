@@ -60,7 +60,7 @@ def new_workspace(request):
     except (WorkspaceException, PluginException) as e:
         return HttpResponseBadRequest(e)
 
-    return redirect('index')
+    return redirect('workspace', tag=request.POST['tag'])
 
 
 def remove_workspace(request):
@@ -89,7 +89,7 @@ def workspace_plugins(request, tag):
     if request.POST['visualizer'] != workspace.active_visualizer.name:
         workspace.active_visualizer = plugin_manager.get_visualizer_by_name(request.POST['visualizer'])
 
-    return redirect('index')
+    return redirect('workspace', tag=tag)
 
 
 def plugin_config(request, name):
