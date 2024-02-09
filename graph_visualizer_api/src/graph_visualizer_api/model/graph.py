@@ -156,6 +156,8 @@ class Graph:
                                 satisfies_all_filters = True
                                 break
                             satisfies_all_filters = False
+                        if str(filter.attribute_value).lower() in str(node.node_id).lower():
+                            satisfies_all_filters = True
                     else:
                         raise GraphError("invalid comparator")
 

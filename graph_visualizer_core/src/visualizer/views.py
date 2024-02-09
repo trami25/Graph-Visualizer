@@ -143,7 +143,7 @@ def add_filter(request, tag):
     filter_name = attribute_name + "|" + comparator + "|" + attribute_value
 
     try:
-        workspace.graph_store.add_filter(filter_name)
+        workspace.add_filter(filter_name)
     except ValueError:
         return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
 
@@ -161,7 +161,7 @@ def remove_filter(request, tag):
     if 'filters' in request.POST:
         filter_name = request.POST['filters']
         try:
-            workspace.graph_store.remove_filter(filter_name)
+            workspace.remove_filter(filter_name)
         except ValueError:
             return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
     else:
@@ -182,7 +182,7 @@ def search(request, tag):
     try:
         filter_value = "search|:|" + search_term
         print(filter_value)
-        workspace.graph_store.add_filter(filter_value)
+        workspace.add_filter(filter_value)
     except ValueError:
         return HttpResponseBadRequest("Invalid search term.")
 
