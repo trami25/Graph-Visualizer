@@ -126,6 +126,6 @@ def plugin_config_update(request, name):
             return HttpResponseBadRequest('No blank fields!')
         new_config[key] = request.POST[key]
 
-    plugin.instance.configuration = new_config
+    plugin.update_configuration(new_config)
 
     return redirect('index')
