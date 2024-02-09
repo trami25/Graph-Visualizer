@@ -12,8 +12,8 @@ from django.shortcuts import render
 
 
 def get_tree(graph: Graph, node_id: int = None):
-    if (not node_id):
-        node_id = graph.get_random_node().node_id
+    if not node_id or len(graph.nodes)==0:
+        return {}
 
     tree = Tree(node_id).from_graph(graph, node_id)
 
