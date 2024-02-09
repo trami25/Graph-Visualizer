@@ -151,3 +151,23 @@ def add_filter(request, tag):
     print(len(workspace.graph_store.filters))
 
     return redirect('workspace', tag=tag)
+
+
+def remove_filter(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    if 'filters' in request.POST:
+        filter_name = request.POST['filters']
+        try:
+            workspace.graph_store.remove_filter(filter_name)
+        except ValueError:
+            return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
+    else:
+        return HttpResponseBadRequest("No filter selected.")
+
+    print(len(workspace.graph_store.subgraph.nodes))
+    print(len(workspace.graph_store.filters))
+
+    return redirect('workspace', tag=tag)
