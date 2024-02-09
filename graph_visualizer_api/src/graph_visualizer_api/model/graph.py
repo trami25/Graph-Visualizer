@@ -145,17 +145,6 @@ class Graph:
                     else:
                         satisfies_all_filters = filter.strategy.satisfies_filter(node.data[filter.attribute_name], filter.attribute_value)
 
-                    # elif filter.comparator == ':':
-                    #     for key, value in node.data.items():
-                    #         if str(filter.attribute_value).lower() in str(key).lower() or str(
-                    #                 filter.attribute_value).lower() in str(value).lower():
-                    #             satisfies_all_filters = True
-                    #             break
-                    #         satisfies_all_filters = False
-                    #     if str(filter.attribute_value).lower() in str(node.node_id).lower():
-                    #         satisfies_all_filters = True
-                    # else:
-                    #     raise GraphError("invalid comparator")
                 elif filter.attribute_name == 'node_id':
                     satisfies_all_filters = filter.strategy.satisfies_filter(node.node_id, filter.attribute_value)
 

@@ -16,32 +16,56 @@ class FilterStrategy(ABC):
 
 class EqualsFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) == attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data == casted_value
+        except TypeError:
+            return str(data) == attribute_value
 
 
 class NotEqualsFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) != attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data != casted_value
+        except TypeError:
+            return str(data) != attribute_value
 
 
 class GreaterThanFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) > attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data > casted_value
+        except TypeError:
+            return str(data) > attribute_value
 
 
 class LessThanFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) < attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data < casted_value
+        except TypeError:
+            return str(data) < attribute_value
 
 
 class GreaterThanOrEqualsFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) >= attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data >= casted_value
+        except TypeError:
+            return str(data) >= attribute_value
 
 
 class LessThanOrEqualsFilterStrategy(FilterStrategy):
     def satisfies_filter(self, data: Any, attribute_value: str) -> bool:
-        return str(data) <= attribute_value
+        try:
+            casted_value = type(data)(attribute_value)
+            return data <= casted_value
+        except TypeError:
+            return str(data) <= attribute_value
 
 
 class SearchFilterStrategy(FilterStrategy):
