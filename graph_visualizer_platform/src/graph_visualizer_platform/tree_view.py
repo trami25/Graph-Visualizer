@@ -7,14 +7,16 @@ import yaml
 import json
 from graph_visualizer_api.visualizer import Visualizer
 from django.template.loader import get_template
+from html_data_source_plugin.datasource import HtmlDataSource
 
 from django.shortcuts import render
 
 
 def get_tree(graph: Graph, node_id:int = None):
 
-    if(node_id):
-        node_id = 150
+    if(not node_id):
+        node_id = graph.get_random_node().node_id
+
     tree = Tree(None).from_graph(graph, node_id)
 
     if(tree):
