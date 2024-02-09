@@ -31,20 +31,18 @@
         </label>
         <button type="submit">Change</button>
     </form>
-     <form action="/workspace/{{ active_workspace.tag }}/" method="get">
-           {% if node_id %}
-        <label>
+   <form action="/workspace/{{ active_workspace.tag }}/" method="get">
+    <label>
+        {% if node_id %}
             Selected Node ID: {{ node_id }}
-        </label>
-        <input type="hidden" name="node_id" value="{{ node_id }}">
-    {% else %}
-        <label>
+            <input type="hidden" name="node_id" value="{{ node_id }}">
+        {% else %}
             Enter Node ID:
-            <input type="number" name="node_id" required>
-        </label>
-    {% endif %}
-     <button type="submit">OK!</button>
-     </form>
+            <input type="number" name="node_id" id="nodeIdInput" required>
+        {% endif %}
+    </label>
+    <button type="submit">OK!</button>
+</form>
      <div id="graph-container" style="width: 100%; height: 600px">
 
         <div class="container">

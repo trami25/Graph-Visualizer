@@ -213,82 +213,97 @@
                 .attr("width", 10)
                 .attr("height", 10);
 
-        const birdViewEdges = birdView.selectAll(".link-bird")
-            .data(links)
-            .enter().append("line")
-            .attr("class", "link-bird");
+            const birdViewEdges = birdView.selectAll(".link-bird")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link-bird");
 
             function updateBirdView() {
                     // Calculate the extent of the graph
-                let graphExtent = getGraphExtent();
+                    let graphExtent = getGraphExtent();
 
-                // Calculate the scale factor for the birdView
-                const scaleX = birdViewWidth / graphExtent.width;
-                const scaleY = birdViewHeight / graphExtent.height;
-                const scale = Math.min(scaleX, scaleY);
+                    // Calculate the scale factor for the birdView
+                    const scaleX = birdViewWidth / graphExtent.width;
+                    const scaleY = birdViewHeight / graphExtent.height;
+                    const scale = Math.min(scaleX, scaleY);
 
                     // Apply the scale to nodes and edges
-                birdViewNodes
-                    .attr("x", d => Math.max(0, Math.min(birdViewWidth - 10, (d.x - graphExtent.minX) * scale)))
-                    .attr("y", d => Math.max(0, Math.min(birdViewHeight - 10, (d.y - graphExtent.minY) * scale)));
+                    birdViewNodes
+                        .attr("x", d => Math.max(0, Math.min(birdViewWidth - 10, (d.x - graphExtent.minX) * scale)))
+                        .attr("y", d => Math.max(0, Math.min(birdViewHeight - 10, (d.y - graphExtent.minY) * scale)));
 
-                birdViewEdges
-                    .attr("x1", d => Math.max(0, Math.min(birdViewWidth - 10, (d.source.x - graphExtent.minX) * scale)))
-                    .attr("y1", d => Math.max(0, Math.min(birdViewHeight - 10, (d.source.y - graphExtent.minY) * scale)))
-                    .attr("x2", d => Math.max(0, Math.min(birdViewWidth - 10, (d.target.x - graphExtent.minX) * scale)))
-                    .attr("y2", d => Math.max(0, Math.min(birdViewHeight - 10, (d.target.y - graphExtent.minY) * scale)));
-
-
-                const transform = d3.zoomTransform(svg.node());
-                const mainViewX = -transform.x / transform.k;
-                const mainViewY = -transform.y / transform.k;
-                const mainViewWidth = width / transform.k;
-                const mainViewHeight = height / transform.k;
-
-                frameX = mainViewX;
-                frameY = mainViewY;
-                frameWidth = mainViewWidth;
-                frameHeight = mainViewHeight;
+                    birdViewEdges
+                        .attr("x1", d => Math.max(0, Math.min(birdViewWidth - 10, (d.source.x - graphExtent.minX) * scale)))
+                        .attr("y1", d => Math.max(0, Math.min(birdViewHeight - 10, (d.source.y - graphExtent.minY) * scale)))
+                        .attr("x2", d => Math.max(0, Math.min(birdViewWidth - 10, (d.target.x - graphExtent.minX) * scale)))
+                        .attr("y2", d => Math.max(0, Math.min(birdViewHeight - 10, (d.target.y - graphExtent.minY) * scale)));
 
 
-                updateFrame();
-            }
+                    const transform = d3.zoomTransform(svg.node());
+                    const mainViewX = -transform.x / transform.k;
+                    const mainViewY = -transform.y / transform.k;
+                    const mainViewWidth = width / transform.k;
+                    const mainViewHeight = height / transform.k;
 
-                // Function to get the extent (min and max coordinates) of the graph
-        function getGraphExtent() {
-            const minX = d3.min(nodes, d => d.x);
-            const minY = d3.min(nodes, d => d.y);
-            const maxX = d3.max(nodes, d => d.x);
-            const maxY = d3.max(nodes, d => d.y);
+                    frameX = mainViewX;
+                    frameY = mainViewY;
+                    frameWidth = mainViewWidth;
+                    frameHeight = mainViewHeight;
 
-            return {
-                minX: minX,
-                minY: minY,
-                maxX: maxX,
-                maxY: maxY,
-                width: maxX - minX,
-                height: maxY - minY
-            };
-        }
 
-            nodeElements.on("click", clickNode);
-            birdViewNodes.on("click", clickNode);
-           function clickNode(event, d) {
-                // Remove focus from all nodes
+                    updateFrame();
+                }
+
+             // Function to get the extent (min and max coordinates) of the graph
+             function getGraphExtent() {
+                    const minX = d3.min(nodes, d => d.x);
+                    const minY = d3.min(nodes, d => d.y);
+                    const maxX = d3.max(nodes, d => d.x);
+                    const maxY = d3.max(nodes, d => d.y);
+
+                    return {
+                        minX: minX,
+                        minY: minY,
+                        maxX: maxX,
+                        maxY: maxY,
+                        width: maxX - minX,
+                        height: maxY - minY
+                    };
+                }
+
+             nodeElements.on("click", clickNode);
+             birdViewNodes.on("click", clickNode);
+             function clickNode(event, d) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('node_id', d.node_id);
+                window.history.replaceState({}, document.title, currentUrl);
+                console.log("New URL:", currentUrl.href);
+
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const nodeIdParam = urlParams.get('node_id');
+                console.log(nodeIdParam);
+
+
+                if (nodeIdParam) {
+
+                    document.getElementById('nodeIdInput').value = nodeIdParam;
+                }
+
+
                 nodeElements.classed("focused", false);
                 birdViewNodes.classed("focused", false);
 
-                // Add focus to the clicked node
+
                 d3.select(this).classed("focused", true);
 
-                // Find the corresponding node in the opposite view by ID
+
                 const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
                     .filter(node => node.node_id === d.node_id);
 
-                // Add focus to the corresponding node in the opposite view
                 correspondingNode.classed("focused", true);
-
             }
+
 
         function updateFrame() {
             return new Promise(resolve => {
@@ -422,6 +437,7 @@
             d.fy = null;
 	    updateBirdView();
         }
+
     </script>
      </div>
 </body>

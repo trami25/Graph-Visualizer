@@ -176,20 +176,24 @@
                 currentUrl.searchParams.set('node_id', d.node_id);
                 window.history.replaceState({}, document.title, currentUrl);
                 console.log("New URL:", currentUrl.href);
-                // Remove focus from all nodes
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const nodeIdParam = urlParams.get('node_id');
+                console.log(nodeIdParam);
+
+                if (nodeIdParam) {
+                    document.getElementById('nodeIdInput').value = nodeIdParam;
+                }
+
                 nodeElements.classed("focused", false);
                 birdViewNodes.classed("focused", false);
 
-                // Add focus to the clicked node
                 d3.select(this).classed("focused", true);
 
-                // Find the corresponding node in the opposite view by ID
                 const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
                     .filter(node => node.node_id === d.node_id);
 
-                // Add focus to the corresponding node in the opposite view
                 correspondingNode.classed("focused", true);
-
             }
 
 
@@ -287,5 +291,4 @@
             function hideDetails() {
                 d3.select("#details").style("display", "none");
             }
-
         </script>
