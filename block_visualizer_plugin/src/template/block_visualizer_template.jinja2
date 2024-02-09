@@ -80,8 +80,8 @@
 	 <div id="graph-container">
         <div id="graph-outline"></div>
     <script>
-        let nodes = JSON.parse('{{ nodes_json|safe }}');
-        let links = JSON.parse('{{ edges_json|safe }}');
+        let nodes = {{ nodes_json|tojson }};
+        let links = {{ edges_json|tojson }};
         let isDirected =JSON.parse('{{ directed|safe }}');
         const width = 1000;
         const height = 600;

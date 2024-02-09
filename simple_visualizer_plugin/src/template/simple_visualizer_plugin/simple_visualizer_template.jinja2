@@ -2,8 +2,8 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
         <script>
-            let nodes = JSON.parse('{{ nodes_json|safe }}');
-            let edges = JSON.parse('{{ edges_json|safe }}');
+            let nodes = {{ nodes_json|tojson }};
+            let edges = {{ edges_json|tojson }};
             let graph_directed = true;
 
             const width = 1000;

@@ -20,9 +20,9 @@ class BlockVisualizer(Visualizer):
         template_env = Environment(loader=FileSystemLoader(os.path.join(script_folder, '../template')))
         template = template_env.get_template('block_visualizer_template.jinja2')
 
-        nodes_json = json.dumps([{'node_id': node.node_id, 'data': node.data} for node in graph.nodes])
-        edges_json = json.dumps([{'source': edge.source.node_id, 'target': edge.target.node_id, 'data': edge.data}
-                                 for edge in graph.edges])
+        nodes_json = [{'node_id': node.node_id, 'data': node.data} for node in graph.nodes]
+        edges_json = [{'source': edge.source.node_id, 'target': edge.target.node_id, 'data': edge.data}
+                                 for edge in graph.edges]
         directed_json = json.dumps(graph.directed)
         html_template = template.render(nodes_json=nodes_json, edges_json=edges_json, directed=directed_json)
 

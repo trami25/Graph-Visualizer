@@ -1,3 +1,5 @@
+import os
+
 from graph_visualizer_api.model.graph import Graph
 from graph_visualizer_api.model.tree import Tree
 import json_data_source_plugin.main as json_main
@@ -26,7 +28,9 @@ def get_tree(graph: Graph, node_id:int = None):
 
 def generate_template(graph: Graph, node_id: int = None) -> str:
     json_data = get_tree(graph, node_id)
-    template = get_template("C:\\Users\\Aleksa\\Desktop\\Graph-Visualizer\\graph_visualizer_platform\\src\\visualization.html")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    template_path = os.path.join(current_dir, "../visualization.html")
+    template = get_template(template_path)
     json_data_str = json.dumps(json_data)
     html_template = template.render({'my_json_data': json_data_str})
 
