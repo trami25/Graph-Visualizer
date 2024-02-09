@@ -57,7 +57,16 @@ class Plugin(Generic[T]):
 
         :param listener: New listener to be added to the list.
         """
+
         self._listeners.append(listener)
+
+    def remove_listener(self, listener: PluginListener) -> None:
+        """Remove listener from the list of plugin listeners.
+
+        :param listener: Listener to be removed.
+        """
+
+        self._listeners.remove(listener)
 
     def update_configuration(self, configuration: dict[str, Any]) -> None:
         """Updates the plugin configuration
