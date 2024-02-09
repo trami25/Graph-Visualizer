@@ -50,12 +50,6 @@ def workspace_view(request, tag):
                       'tree_template': mark_safe(my_tree)
                   })
 
-
-def get_node_for_tree(request, tag, node_id):
-    print(node_id)
-    return redirect("workspace", tag=tag)
-
-
 def new_workspace(request):
     workspace_manager = WorkspaceManager()
     plugin_manager = PluginManager()
