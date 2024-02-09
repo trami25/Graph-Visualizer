@@ -47,6 +47,10 @@ class GraphStore:
     def subgraph(self) -> Optional[Graph]:
         return self._subgraph
 
+    @property
+    def filters(self) -> list[Filter]:
+        return self._filters
+
     def add_listener(self, *args: GraphListener) -> None:
         """Adds a listener to the list of listeners.
 

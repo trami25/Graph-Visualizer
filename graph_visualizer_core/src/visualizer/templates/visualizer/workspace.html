@@ -31,6 +31,14 @@
         </label>
         <button type="submit">Change</button>
     </form>
+    <form action="/workspace/{{ active_workspace.tag }}/add_filter/" method="post">
+        {% csrf_token %}
+    <label>
+        Filter:
+        <input type="text" name="filter">
+        <button type="submit">Apply</button>
+    </label>
+    </form>
      <div id="graph-container" style="width: 100%; height: 600px">
 
         <div class="container">

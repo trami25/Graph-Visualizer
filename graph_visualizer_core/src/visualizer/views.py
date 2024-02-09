@@ -32,6 +32,7 @@ def workspace_view(request, tag):
     if active_workspace is None:
         raise Http404('Workspace does not exist.')
     my_template = active_workspace.template
+
     my_tree = active_workspace._tree_template
     return render(request, 'visualizer/workspace.html',
                   context={
@@ -129,3 +130,18 @@ def plugin_config_update(request, name):
     plugin.instance.configuration = new_config
 
     return redirect('index')
+
+
+def add_filter(request, tag):
+    workspace_manager = WorkspaceManager()
+
+    workspace = workspace_manager.get_by_tag(tag)
+
+    filter_name = request.POST['filter']
+
+    workspace.graph_store.add_filter(filter_name)
+
+    print(len(workspace.graph_store.subgraph.nodes))
+    print(len(workspace.graph_store.filters))
+
+    return redirect('workspace', tag=tag)

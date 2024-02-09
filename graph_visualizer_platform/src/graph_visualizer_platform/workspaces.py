@@ -25,7 +25,7 @@ class Workspace:
         self._active_data_source = active_data_source
         self._graph_store.root_graph = active_data_source.instance.generate_graph()
         self._active_visualizer = active_visualizer
-        self._template = active_visualizer.instance.generate_template(self._graph_store.root_graph)
+        self._template = active_visualizer.instance.generate_template(self._graph_store.subgraph)
         self._tree_template = tree_view.generate_template(self._graph_store.root_graph)
 
     @property
@@ -62,6 +62,10 @@ class Workspace:
     @property
     def template(self) -> str:
         return self._template
+
+    @property
+    def graph_store(self) -> GraphStore:
+        return self._graph_store
 
 
 class WorkspaceManager(metaclass=SingletonMeta):
