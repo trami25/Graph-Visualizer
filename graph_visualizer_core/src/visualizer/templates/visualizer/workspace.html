@@ -31,15 +31,19 @@
         </label>
         <button type="submit">Change</button>
     </form>
-     <div id="graph-container" style="width: 1000px; height: 600px">
-        <div id="graph-outline"></div>
-         <div id="details"></div></div>
+     <div id="graph-container" style="width: 100%; height: 600px">
+
         <div class="container">
-        <div class="container2" style="width: 2000px; height: 1500px">
-            <svg id="tree-svg">
-                <g transform="translate(50,-300)">
-                </g>
-            </svg>
+            <div class="container2" style="width: 2000px; height: 1500px">
+                <svg id="tree-svg">
+                    <g transform="translate(50,-300)">
+                    </g>
+                </svg>
+            </div>
         </div>
+
+        <div id="graph-outline"></div>
+         <div id="details"></div>
+        
     </div>
 {% endblock %}

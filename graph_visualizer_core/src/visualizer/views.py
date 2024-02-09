@@ -26,7 +26,7 @@ def workspace_view(request, tag):
     if active_workspace is None:
         raise Http404('Workspace does not exist.')
     my_template = active_workspace.template
-    my_tree = active_workspace.template
+    my_tree = active_workspace._tree_template
     return render(request, 'visualizer/workspace.html',
                   context={
                       'data_source_plugins': data_source_plugins,
