@@ -11,7 +11,11 @@ from django.template.loader import get_template
 from django.shortcuts import render
 
 
-def get_tree(graph: Graph, node_id: int = None):
+def get_tree(graph: Graph, node_id:int = None):
+
+    if(not node_id):
+        node_id = graph.get_random_node().node_id
+
     tree = Tree(node_id).from_graph(graph, node_id)
 
     if (tree):
@@ -20,6 +24,7 @@ def get_tree(graph: Graph, node_id: int = None):
     with open("graph_visualizer_platform\\src\\graph_visualizer_platform\\tree_view_data.json", 'r') as file:
         json_data = json.load(file)
     return json_data
+
 
 
 def generate_template(graph: Graph, node_id: int = None) -> str:
