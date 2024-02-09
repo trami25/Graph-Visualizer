@@ -72,7 +72,6 @@ classDiagram
 title: Platform
 ---
 classDiagram
-    class Facade
     class PluginManager {
         + getDataSourceByName(name: String) Plugin~DataSourcePlugin~
         + getVisualizerByName(name: String) Plugin~Visualizer~
