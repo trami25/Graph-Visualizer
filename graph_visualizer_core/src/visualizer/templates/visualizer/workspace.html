@@ -35,7 +35,16 @@
         {% csrf_token %}
     <label>
         Filter:
-        <input type="text" name="filter">
+        <input type="text" name="attribute_name">
+        <select name="comparator">
+            <option value="=">=</option>
+            <option value="!=">!=</option>
+            <option value=">">></option>
+            <option value="<"><</option>
+            <option value=">=">>=</option>
+            <option value="<="><=</option>
+        </select>
+        <input type="text" name="attribute_value">
         <button type="submit">Apply</button>
     </label>
     </form>

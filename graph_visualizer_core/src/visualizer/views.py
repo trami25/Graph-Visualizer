@@ -137,9 +137,15 @@ def add_filter(request, tag):
 
     workspace = workspace_manager.get_by_tag(tag)
 
-    filter_name = request.POST['filter']
+    attribute_name = request.POST['attribute_name']
+    comparator = request.POST['comparator']
+    attribute_value = request.POST['attribute_value']
+    filter_name = attribute_name + " " + comparator + " " + attribute_value
 
-    workspace.graph_store.add_filter(filter_name)
+    try:
+        workspace.graph_store.add_filter(filter_name)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid filter format. Please fill all fields.")
 
     print(len(workspace.graph_store.subgraph.nodes))
     print(len(workspace.graph_store.filters))
