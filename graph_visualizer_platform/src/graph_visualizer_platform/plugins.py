@@ -1,17 +1,27 @@
 from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
 from graph_visualizer_api.datasource import DataSource
 from graph_visualizer_api.visualizer import Visualizer
-from typing import TypeVar, Type, Generic
+from typing import TypeVar, Type, Generic, Any
 from graph_visualizer_platform.exceptions import PluginException
 from graph_visualizer_platform.singleton import SingletonMeta
 
 import sys
+
 if sys.version_info < (3, 10):
     from importlib_metadata import entry_points
 else:
     from importlib.metadata import entry_points
 
 T = TypeVar('T')
+
+
+class PluginListener(ABC):
+    @abstractmethod
+    def on_config_changed(self):
+        pass
 
 
 class Plugin(Generic[T]):
@@ -22,12 +32,14 @@ class Plugin(Generic[T]):
         _plugin_type: The plugin class.
         _instance: The instance of the plugin.
         called.
+        _listeners: List of plugin listeners.
     """
 
     def __init__(self, name: str, plugin_type: Type[T], instance: T = None):
         self._name = name
         self._plugin_type = plugin_type
         self._instance = instance
+        self._listeners: list[PluginListener] = []
 
     @property
     def name(self) -> str:
@@ -39,6 +51,33 @@ class Plugin(Generic[T]):
             self._instance = self._plugin_type()
 
         return self._instance
+
+    def add_listener(self, listener: PluginListener) -> None:
+        """Add a listener to the list of plugin listeners.
+
+        :param listener: New listener to be added to the list.
+        """
+
+        self._listeners.append(listener)
+
+    def remove_listener(self, listener: PluginListener) -> None:
+        """Remove listener from the list of plugin listeners.
+
+        :param listener: Listener to be removed.
+        """
+
+        self._listeners.remove(listener)
+
+    def update_configuration(self, configuration: dict[str, Any]) -> None:
+        """Updates the plugin configuration
+
+        :param configuration: New configuration.
+        """
+
+        instance = self.instance
+        instance.configuration = configuration
+        for listener in self._listeners:
+            listener.on_config_changed()
 
     def __str__(self):
         return f'{self._name} {self._instance}'
