@@ -33,8 +33,7 @@
 
         .container2 {
             width: 300px; 
-            height: 600px;  
-            overflow: scroll;
+            height: 600px; 
         }
 
         #tree-svg{
@@ -94,7 +93,6 @@
 
         function createNode(node) {
             var nodeId = node.data.id;
-            let name = node.data.data.name
             var translateX = 125 * node.depth;
 
             hasChildren = false;
