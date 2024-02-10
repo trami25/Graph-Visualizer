@@ -19,6 +19,7 @@ def get_tree(graph: Graph, node_id: int = None):
         node_id = graph.get_random_node().node_id
     tree = Tree(node_id).from_graph(graph, node_id)
 
+    print('da')
     if (tree):
         yaml_data = tree.to_json()
 

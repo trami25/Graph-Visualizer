@@ -1,3 +1,4 @@
+import os.path
 from typing import List
 from .graph import Graph
 import yaml
@@ -94,7 +95,7 @@ class Tree:
     def to_json(self):
         """Convert the tree structure to JSON format."""
         json_data = self._tree_to_json(self.root)
-        with open("graph_visualizer_platform\\src\\graph_visualizer_platform\\tree_view_data.json", "w") as file:
+        with open(os.path.join("graph_visualizer_platform", "src", "graph_visualizer_platform", "tree_view_data.json"), "w") as file:
             json.dump(json_data, file, indent=4)
         return json_data
 
