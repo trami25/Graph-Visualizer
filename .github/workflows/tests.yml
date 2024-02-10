@@ -1,4 +1,4 @@
-name: Django CI
+name: Python Tests
 
 on:
   push:
@@ -24,7 +24,8 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install ./graph_visualizer_api ./graph_visualizer_platform ./graph_visualizer_core ./html_data_source_plugin ./json_data_source_plugin ./simple_visualizer_plugin ./block_visualizer_plugin
     - name: Run Tests
       run: |
-        python ./graph_visualizer_core/manage.py test
+        gv-manage test
+        python3 -m unittest discover -s graph_visualizer_api/tests/

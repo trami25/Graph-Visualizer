@@ -1,0 +1,218 @@
+ <style>
+        .node rect {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+            cursor:pointer;
+        }
+
+        .node text {
+            font: 12px sans-serif;
+        }
+
+        .node-text{
+            display: none;
+        }
+
+        .node-rect {
+            fill: white; 
+            stroke: steelblue; 
+            stroke-width: 2px; 
+            display: none;
+        }
+
+        .container {
+            width: 30%; 
+            height: 600px;
+            overflow: scroll;
+            justify-content: right;
+            position: relative;  
+            flex-grow: 1;
+            border-color: black;
+        }
+
+        .container2 {
+            width: 300px; 
+            height: 600px; 
+        }
+
+        #tree-svg{
+            width: 1000%;
+            height: 1000%;
+            position: relative;
+        }
+
+        .explanation {
+            position: absolute;
+            width: 100px;
+            height: 30px;
+            background-color: white;
+            color: black;
+            padding: 5px;
+            font-size: 12px; 
+            display: block; 
+        }
+        
+    </style>
+
+    {{ html_template|safe }}
+    <script>
+
+        var treeData = JSON.parse('{{ my_json_data|escapejs }}');
+
+
+        let cordinates = 0;
+
+        // var treeData = JSON.parse(json_data);
+
+        var treeLayout = d3.tree().size([2000, 1500]);
+
+        var rootNode = d3.hierarchy(treeData, function(d) {
+            return d.children;
+        });
+
+        treeLayout(rootNode);
+
+
+        var translationDict = {};
+        let last_created_id = 0;
+
+
+        function DFS(node, callback) {
+            if (!node) return;
+            
+            callback(node);
+
+            if (node.children) {
+                node.children.forEach(function(child) {
+                    DFS(child, callback);
+                });
+            }
+        }
+
+
+        function createNode(node) {
+            var nodeId = node.data.id;
+            var translateX = 125 * node.depth;
+
+            hasChildren = false;
+            
+            if(node.parent && node.parent.children){
+
+                if(node.parent.children.indexOf(node) === 0 || translationDict[last_created_id].children === false || node.parent.children.length === 1)  {
+                    var translateY = translationDict[last_created_id].translateY + 150;
+                }else{
+                    var translateY = translationDict[last_created_id].translateY + (35  * (node.parent.children.indexOf(node)));
+                }
+                
+            }
+            else{
+                var translateY = 1745.721271393643 * 0.2;
+                last_created_id = node.data.id;
+            }
+
+            if(node.children){hasChildren = true;}
+
+            translationDict[node.data.id] = { translateX: translateX, translateY: translateY, children: hasChildren };
+            last_created_id = node.data.id;
+
+            var svg = d3.select('svg');
+
+            
+            let title = node.data.data.name ? ["Name: " , node.data.data.name] : ["Title:", node.data.data.title];
+            let new_line = ""
+            if(title[1].length * 12 >= 132){
+                var charsToFit = Math.floor(132 / 12);
+
+                var firstPart = title[1].substring(0, charsToFit);
+                var secondPart = title[1].substring(charsToFit , 2 * charsToFit);
+
+                title[1] = firstPart;
+                new_line = secondPart
+            }
+
+            svg.append('rect')
+                .attr('class', 'node-rect')
+                .attr('id', "node-rect" + node.data.id)
+                .attr('width', 130)
+                .attr('height', 100)
+                .attr('x', translateX + 15)
+                .attr('y', translateY - 270)
+                .on('click', function () {
+
+                    d3.select('#nodeId').text('Node ID: ' + nodeId);
+                    d3.select('#nodeName').text(title);
+                });
+
+
+
+            svg.append('text')
+                .attr('class', 'node-text')
+                .attr('id', "node-text" + node.data.id)
+                .attr('x', translateX + 50)
+                .attr('y', translateY - 250)
+                .attr('text-anchor', 'middle')
+                .attr('alignment-baseline', 'middle')
+                .on('click', function () {
+
+                    d3.select('#nodeId').text('Node ID: ' + nodeId);
+                    d3.select('#nodeName').text(title[1]);
+
+                
+                })
+                .selectAll('tspan')
+                .data(["ID: " + nodeId, title[0], title[1], new_line])
+                .enter().append('tspan')
+                .attr('x', function(d, i) {
+                    if (i === 0 || i === 1) {
+                        return translateX + 50;
+                    } else {
+                        return translateX + 70; 
+                    }
+                })
+                .attr('dy', function(d, i) { if(i === 0) return 0 + 'em';
+                return 1.5 + "em"; })
+                .text(function(d) { return d; });
+
+            var nodeElement = d3.select('svg g').append('g')
+                .attr('class', 'node')
+                .attr('transform', 'translate(' + translateX + ',' + translateY + ')');
+
+            nodeElement.append('rect')
+                .attr('width', 50)
+                .attr('height', 20)
+                .attr('x', -25)
+                .attr('y', -10)
+                .on('click', function () {
+                    var rect = d3.select('#node-rect' + node.data.id);
+                    var text = d3.select('#node-text' + node.data.id);
+                    if(rect.style('display') === 'none'){
+                        rect.style('display', 'block');
+                        text.style('display', 'block');
+                    }else{
+                        rect.style('display', 'none');
+                        text.style('display', 'none');
+                    }
+
+                    d3.select('#nodeId').text('Node ID: ' + nodeId);
+                    d3.select('#nodeName').text(title[1]);
+                });
+
+            nodeElement.append('text')
+                .attr('dy', '0.31em')
+                .attr('text-anchor', 'middle')
+                .attr('alignment-baseline', 'middle')
+                .text(nodeId)
+                .on('click', function () {
+                    var container = d3.select('#explanation' + node.data.id);
+
+                    container.style('display', 'block')
+                        .style('position', 'fixed');
+
+                    d3.select('#nodeId').text('Node ID: ' + nodeId);
+                    d3.select('#nodeName').text(title[1]);
+                });
+        }
+        DFS(rootNode, createNode);
+    </script>
+

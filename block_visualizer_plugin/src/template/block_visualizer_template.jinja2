@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Visualizer with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .node {
+            display: inline-block;
+            position: relative;
+        }
+
+       .node rect {
+            fill: #ddd;
+            stroke: #000;
+
+        }
+
+        .node h3 {
+            margin: 5px;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .node ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .node li {
+            margin: 5px;
+        }
+
+        .arrowhead {
+            fill: #cbcbcb;
+        }
+
+        .edge-label {
+            font-size: 12px;
+            fill: #000;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+	 .node-bird rect {
+            fill: none;
+            stroke: #fff;
+        }
+
+        .link-bird {
+            fill: none;
+            stroke: #808080;
+            stroke-width: 0.5;
+        }
+        .node.focused rect {
+        fill: #ff0000;
+        stroke: #000;
+        stroke-width: 2;
+    }
+
+    .node-bird.focused  {
+        fill: #ff0000;
+        stroke: #fff;
+    }
+	 #graph-container {
+            border: 2px solid #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #graph-outline {
+            position: absolute;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let nodes = {{ nodes_json|tojson }};
+        let links = {{ edges_json|tojson }};
+        let isDirected =JSON.parse('{{ directed|safe }}');
+        const width = 1000;
+        const height = 600;
+	    let node_width;
+	    let node_height;
+
+	    const maxLength = nodes.reduce((max, node) => {
+    	    const entries = Object.entries(node.data);
+    	    const maxLengthEntry = entries.reduce((max, [key, value]) => {
+                const combinedLength = (value === null) ? 3 + key.length : value.toString().length + key.length;
+                return Math.max(max, combinedLength);
+            }, 0);
+        return Math.max(max, maxLengthEntry);
+        }, 0);
+
+	    node_width = maxLength * 8;
+
+
+        const svg = d3.select("#graph-container").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+	        .call(d3.zoom().scaleExtent([0.1, 4]).on("zoom", zoomed))
+            .append("g");
+
+
+        const linkElements = svg.selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 2)
+            .attr("marker-end", isDirected ? "url(#arrowhead)" : null);
+
+        const linkLabels = svg.selectAll(".edge-label")
+            .data(links)
+            .enter().append("text")
+            .attr("class", "edge-label")
+            .text(d => {
+            	if (d.data && Object.keys(d.data).length > 0) {
+            	    return Object.values(d.data)[0]; // Vraćanje vrednosti prvog ključa iz objekta d.data ako postoji
+            	} else {
+            	    return ""; // Vraćanje praznog stringa ako objekat nema ključeva
+            	}
+            });
+
+        const linkForce = d3.forceLink(links)
+            .id(d => d.node_id)
+            .distance(350)
+            .strength(1)
+            .iterations(1);
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", linkForce)
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const nodeElements = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        const rect = nodeElements.append("rect")
+            .attr("width", node_width)
+            .attr("height", node_height);
+
+        const foreignObjects = nodeElements.append("foreignObject")
+            .attr("width", node_width)
+            .attr("height", function(d) {
+                const relevantAttributes = Object.keys(d)
+                    .filter(key => key !== 'id' && key !== 'x' && key !== 'y' && key !== 'index');
+                const numAttributes = relevantAttributes.length;
+		        node_height = (numAttributes+1) * 21 + 27;
+                return node_height
+            })
+            .append("xhtml:div");
+
+	    rect.attr("height", node_height)
+
+        simulation .force("charge", d3.forceManyBody().strength(-10*node_width))
+            .force("collide", d3.forceCollide(4*node_height));
+        foreignObjects.append("h3")
+            .text(d => d.node_id);
+
+        foreignObjects.append("ul")
+            .selectAll("li")
+            .data(d => Object.entries(d.data).filter(entry => entry[0] !== 'node_id')) // Show all attributes except id
+            .enter().append("li")
+            .text(entry => `${entry[0]}: ${entry[1]}`);
+
+        // Adding marker for arrowhead
+        const defs = svg.append("defs");
+        defs.append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 0 10 10")
+            .attr("refX", 8)
+            .attr("refY", 5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 Z");
+
+        d3.select("#graph-outline")
+                .style("width", `${width}px`)
+                .style("height", `${height}px`);
+
+            const birdViewWidth = 300;
+            const birdViewHeight = 300;
+            let frameX = 0;
+            let frameY = 0;
+
+            const birdView = d3.select("#graph-container").append("svg")
+                .attr("width", birdViewWidth)
+                .attr("height", birdViewHeight)
+                .style("position", "absolute")
+                .style("bottom", "10px")
+                .style("right", "10px")
+                .style("border", "1px solid #000")
+                .style("background-color", "#f0f0f0");
+
+           const birdViewNodes = birdView.selectAll(".node-bird")
+                .data(nodes)
+                .enter().append("rect")
+                .attr("class", "node-bird")
+                .attr("x", d => d.x - 5)
+                .attr("y", d => d.y - 5)
+                .attr("width", 10)
+                .attr("height", 10);
+
+            const birdViewEdges = birdView.selectAll(".link-bird")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link-bird");
+
+            function updateBirdView() {
+                    // Calculate the extent of the graph
+                    let graphExtent = getGraphExtent();
+
+                    // Calculate the scale factor for the birdView
+                    const scaleX = birdViewWidth / graphExtent.width;
+                    const scaleY = birdViewHeight / graphExtent.height;
+                    const scale = Math.min(scaleX, scaleY);
+
+                    // Apply the scale to nodes and edges
+                    birdViewNodes
+                        .attr("x", d => Math.max(0, Math.min(birdViewWidth - 10, (d.x - graphExtent.minX) * scale)))
+                        .attr("y", d => Math.max(0, Math.min(birdViewHeight - 10, (d.y - graphExtent.minY) * scale)));
+
+                    birdViewEdges
+                        .attr("x1", d => Math.max(0, Math.min(birdViewWidth - 10, (d.source.x - graphExtent.minX) * scale)))
+                        .attr("y1", d => Math.max(0, Math.min(birdViewHeight - 10, (d.source.y - graphExtent.minY) * scale)))
+                        .attr("x2", d => Math.max(0, Math.min(birdViewWidth - 10, (d.target.x - graphExtent.minX) * scale)))
+                        .attr("y2", d => Math.max(0, Math.min(birdViewHeight - 10, (d.target.y - graphExtent.minY) * scale)));
+
+
+                    const transform = d3.zoomTransform(svg.node());
+                    const mainViewX = -transform.x / transform.k;
+                    const mainViewY = -transform.y / transform.k;
+                    const mainViewWidth = width / transform.k;
+                    const mainViewHeight = height / transform.k;
+
+                    frameX = mainViewX;
+                    frameY = mainViewY;
+                    frameWidth = mainViewWidth;
+                    frameHeight = mainViewHeight;
+
+
+                    updateFrame();
+                }
+
+             // Function to get the extent (min and max coordinates) of the graph
+             function getGraphExtent() {
+                    const minX = d3.min(nodes, d => d.x);
+                    const minY = d3.min(nodes, d => d.y);
+                    const maxX = d3.max(nodes, d => d.x);
+                    const maxY = d3.max(nodes, d => d.y);
+
+                    return {
+                        minX: minX,
+                        minY: minY,
+                        maxX: maxX,
+                        maxY: maxY,
+                        width: maxX - minX,
+                        height: maxY - minY
+                    };
+                }
+
+             nodeElements.on("click", clickNode);
+             birdViewNodes.on("click", clickNode);
+             function clickNode(event, d) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('node_id', d.node_id);
+                window.history.replaceState({}, document.title, currentUrl);
+                console.log("New URL:", currentUrl.href);
+
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const nodeIdParam = urlParams.get('node_id');
+                console.log(nodeIdParam);
+
+
+                if (nodeIdParam) {
+
+                    document.getElementById('nodeIdInput').value = nodeIdParam;
+                }
+
+
+                nodeElements.classed("focused", false);
+                birdViewNodes.classed("focused", false);
+
+
+                d3.select(this).classed("focused", true);
+
+
+                const correspondingNode = (this.classList.contains("node") ? birdViewNodes : nodeElements)
+                    .filter(node => node.node_id === d.node_id);
+
+                correspondingNode.classed("focused", true);
+            }
+
+
+        function updateFrame() {
+            return new Promise(resolve => {
+                const transform = d3.zoomTransform(svg.node());
+                const graphExtent = getGraphExtent();
+                const scaleX = birdViewWidth / graphExtent.width;
+                const scaleY = birdViewHeight / graphExtent.height;
+                const scale = Math.min(scaleX, scaleY);
+
+                const mainViewX = -transform.x / transform.k;
+                const mainViewY = -transform.y / transform.k;
+
+                frameX = mainViewX;
+                frameY = mainViewY;
+                frameWidth = width / transform.k;
+                frameHeight = height / transform.k;
+
+                birdView.selectAll(".frame").remove();
+
+                birdView.append("rect")
+                    .attr("class", "frame")
+                    .attr("x", (frameX - graphExtent.minX) * scale)
+                    .attr("y", (frameY - graphExtent.minY) * scale)
+                    .attr("width", frameWidth * scale)
+                    .attr("height", frameHeight * scale)
+                    .style("fill", "none")
+                    .style("stroke", "#ff0000")
+                    .style("stroke-width", 2);
+
+                resolve();
+            });
+        }
+
+        simulation.on("end", () => {
+            updateBirdView();
+            updateFrameFromMainView();
+        });
+
+        function updateFrameFromMainView() {
+            const transform = d3.zoomTransform(svg.node());
+            const scale = birdViewWidth / width;
+
+            const mainViewX = -transform.x / transform.k;
+            const mainViewY = -transform.y / transform.k;
+
+            frameX = mainViewX;
+            frameY = mainViewY;
+
+            updateFrame();
+        }
+
+        window.addEventListener("resize", () => {
+            updateBirdView().then(() => {
+                updateFrameFromMainView();
+            });
+        });
+                function zoomed(event) {
+            svg.attr("transform", event.transform);
+            updateBirdView().then(() => {
+                updateFrameFromMainView();
+            });
+        }
+
+        simulation.on("tick", () => {
+          linkElements.each(function(d) {
+
+            const sourceX = d.source.x + node_width / 2; // X koordinata centra čvora
+            const sourceY = d.source.y + node_height / 2; // Y koordinata centra čvora
+            const targetX = d.target.x + node_width / 2; // X koordinata centra čvora
+            const targetY = d.target.y + node_height / 2; // Y koordinata centra čvora
+
+            // Izračunaj razliku u x i y koordinatama
+            const dx = targetX - sourceX;
+            const dy = targetY - sourceY;
+
+            // Izračunaj dužinu vektora
+            const length = Math.sqrt(dx * dx + dy * dy);
+
+            // Normalizuj vektor
+            const unitDx = dx / length;
+            const unitDy = dy / length;
+
+            // Definiši ivicu čvora kao offset od centra čvora
+            const nodeEdgeOffset = 0; // Prilagodite ovu vrednost prema potrebama
+
+            // Izračunaj koordinate tačaka početka i kraja linije tako da idu do ivice čvorova
+            const edgeSourceX = sourceX + (unitDx * (node_width / 2 + nodeEdgeOffset));
+            const edgeSourceY = sourceY + (unitDy * (node_height / 2 + nodeEdgeOffset));
+            const edgeTargetX = targetX - (unitDx * (node_width / 2 + nodeEdgeOffset));
+            const edgeTargetY = targetY - (unitDy * (node_height / 2 + nodeEdgeOffset));
+
+            // Postavi koordinate tačaka početka i kraja linije
+            d3.select(this).attr("x1", edgeSourceX)
+                           .attr("y1", edgeSourceY)
+                           .attr("x2", edgeTargetX)
+                           .attr("y2", edgeTargetY);
+        });
+
+            linkLabels
+                .attr("x", d => (d.source.x + d.target.x) / 2 + node_width / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2 + node_height / 2);
+
+            function calculateMarkerEnd(d) {
+                const angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
+                const refX = node_width + Math.cos(angle) * 60;
+                const refY = node_height + Math.sin(angle) * 30;
+                return isDirected ? `url(#arrowhead)` : null;
+            }
+
+            linkElements.attr("marker-end", calculateMarkerEnd);
+
+            nodeElements
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+	    updateBirdView();
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+	    updateBirdView();
+        }
+        birdView.on("click", function (event) {
+});
+
+    </script>
+     </div>
+</body>

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graph_visualizer_api"
+authors = [
+    {name = "Vladislav Radović", email = "radovic.sv27.2021@uns.ac.rs"},
+    {name = "Nikola Mitrović", email = "mitrovic.sv18.2021@uns.ac.rs"},
+    {name = "Bojan Živanić", email = "radovic.sv61.2021@uns.ac.rs"},
+    {name = "Aleksa Janjić", email = "radovic.sv58.2021@uns.ac.rs"},
+]
+description = "API library for Graph Visualizer"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["version"]

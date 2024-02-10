@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph Visualizer Config</title>
+</head>
+<body>
+    <h1>Configuration for {{ name }}</h1>
+
+    {% if options %}
+        <form style="display: flex; flex-direction: column; align-items: start; row-gap: .5em" action="/config/{{ name }}/update/" method="post">
+        {% csrf_token %}
+            {% for key, value in options %}
+                <label>
+                    {{ key }}
+                        <input type="text" value={{ value }} name={{ key }}>
+                </label>
+            {% endfor %}
+            <button type="submit">Submit</button>
+        </form>
+    {% else %}
+        <p>No configuration for this plugin.</p>
+    {% endif %}
+</body>
+</html>

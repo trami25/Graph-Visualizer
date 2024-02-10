@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "block_visualizer_plugin"
+authors = [
+    {name = "Bojan Živanić", email = "zivanic.sv61.2021@uns.ac.rs"}
+]
+description = "Block visualizer plugin for visualization of the graph"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "graph_visualizer_api",
+    "jinja2",
+]
+dynamic = ["version"]
+
+[project.entry-points."gv.plugins.visualizer"]
+block = "block_visualizer_plugin.block_visualizer:BlockVisualizer"
